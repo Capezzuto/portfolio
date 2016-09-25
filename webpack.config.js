@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
-  entry: './app/index',
+  entry: './src/index.js',
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js'
@@ -12,6 +12,10 @@ module.exports = {
       riot: 'riot'
     })
   ],
+  resolve: {
+    modulesDirectories: ["node_modules"],
+    extensions: ['', '.js', '.tag']
+  },
   module: {
     preLoaders: [
       { test: /\.tag$/, exclude: /node_modules/, loader: 'riotjs-loader', query: { type: 'none' } }
