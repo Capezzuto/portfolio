@@ -7,7 +7,8 @@ var PORT = 3000;
 //   res.send(path.resolve(__dirname,'index.html'));
 // })
 
-app.use('/', express.static('src'));
+app.use('/', express.static(__dirname + '/src'));
+app.use('/dist',express.static(__dirname + '/dist'));
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
