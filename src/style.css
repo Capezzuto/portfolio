@@ -1,7 +1,89 @@
+body {
+  font-size: 12pt;
+  overflow-x: hidden;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Comfortaa', Verdana, sans-serif;
 }
 
 p, li {
   font-family: 'Abel', sans-serif;
+}
+
+#content {
+  margin-top: 5em;
+}
+
+#logo {
+  font-size: 48pt;
+  margin: 0.3em 0.15em;
+  font-weight: 100;
+}
+
+riot-nav {
+  /*position: relative;*/
+  float: right;
+  display: inline-block;
+  margin-right: -30px;
+}
+
+riot-nav ul {
+  margin: 0;
+  padding: 0;
+}
+
+riot-nav .menu-item {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 10px;
+  font-size: 1.2em;
+  text-decoration: none;
+  transform: skewX(-30deg);
+  width: 75px;
+  text-align: center;
+  vertical-align: top;
+}
+
+.menu-item > p {
+  padding: 0;
+  margin: 0;
+  transform: skewX(30deg);
+}
+
+riot-nav .menu-spacer {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 10px;
+  transform: skewX(-30deg);
+  width: 20px;
+  height: 45px;
+  text-align: center;
+  vertical-align: top;
+}
+
+riot-nav a {
+  text-decoration: none;
+}
+
+.cyan {
+  background-color: rgba(0, 174, 239, 0.5);
+}
+
+.magenta {
+  background-color: rgba(236, 0, 140, 0.4);
+}
+
+.yellow {
+  background-color: rgba(255, 242, 0, 0.8);
+}
+
+#overlap-test {
+  width: 200px;
+  height: 400px;
+  background-color: #DDDDDD;
+  position: absolute;
+  top: 15px;
+  left: 400px;
+  z-index: -13;
 }

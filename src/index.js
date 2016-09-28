@@ -9,13 +9,10 @@ require('./tags/bio.tag');
 require('./tags/reach.tag');
 require('./tags/page-not-found.tag');
 
-// import riot-nav from './riot-nav.tag';
-
-
 //This would be the place to initialize a redux store if I were so inclined in the future
 
-
 let currentTag = null;
+
 const routes = {
   'home': function(id) {
     mount('home');
@@ -54,9 +51,9 @@ function routeHandler(routeSelected, id) {
   route ? route(id) : mount('page-not-found');
 }
 
+riot.route.base('/');
 riot.route.stop();
 riot.route.start(true);
-
 riot.route(routeHandler);
 
 riot.mount('riot-nav');
