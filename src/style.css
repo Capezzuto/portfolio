@@ -21,6 +21,12 @@ p, li {
   font-weight: 100;
 }
 
+#logo-container {
+  margin: 0;
+  padding: 0;
+
+}
+
 riot-nav {
   /*position: relative;*/
   float: right;
@@ -39,7 +45,7 @@ riot-nav .menu-item {
   padding: 10px;
   font-size: 1.2em;
   text-decoration: none;
-  transform: skewX(-30deg);
+  transform: skewX(-37.5deg);
   width: 75px;
   text-align: center;
   vertical-align: top;
@@ -48,14 +54,14 @@ riot-nav .menu-item {
 .menu-item > p {
   padding: 0;
   margin: 0;
-  transform: skewX(30deg);
+  transform: skewX(37.5deg);
 }
 
 riot-nav .menu-spacer {
   box-sizing: border-box;
   display: inline-block;
   padding: 10px;
-  transform: skewX(-30deg);
+  transform: skewX(-37.5deg);
   width: 20px;
   height: 45px;
   text-align: center;
@@ -68,14 +74,17 @@ riot-nav a {
 
 .cyan {
   background-color: rgba(0, 174, 239, 0.5);
+  color: rgba(255, 255, 255, 1);
 }
 
 .magenta {
-  background-color: rgba(236, 0, 140, 0.4);
+  background-color: rgba(236, 0, 140, 0.5);
+  color: rgba(255, 242, 0, 1);
 }
 
 .yellow {
-  background-color: rgba(255, 242, 0, 0.8);
+  background-color: rgba(255, 242, 0, 0.6);
+  color: rgba(256, 0, 140, 0.6);
 }
 
 #overlap-test {
