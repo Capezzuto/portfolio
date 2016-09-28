@@ -32,6 +32,7 @@
   "dependencies": {
     "compression": "^1.6.2",
     "express": "^4.14.0",
+    "jquery": "^3.1.1",
     "riot": "^2.6.2"
   }
 }

@@ -16,22 +16,41 @@ p, li {
 }
 
 #logo {
-  font-size: 48pt;
-  margin: 0.3em 0.15em;
+  font-size: 42pt;
+  margin: 0;
   font-weight: 100;
 }
 
 #logo-container {
-  margin: 0;
+  margin: 16px 16px 8px;
   padding: 0;
-
+  display: inline-block;
 }
 
 riot-nav {
-  /*position: relative;*/
+  position: relative;
+  margin-top: 30px;
   float: right;
   display: inline-block;
   margin-right: -30px;
+  transform: skewX(-37.5deg);
+}
+
+riot-nav .hamburger {
+  display: block;
+  background: url('/assets/hamburger.svg') no-repeat 0 0;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+}
+
+#hamburger-box {
+  display: none;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.5);
+  max-height: 45px;
+  padding: 7px 10px;
 }
 
 riot-nav ul {
@@ -45,8 +64,7 @@ riot-nav .menu-item {
   padding: 10px;
   font-size: 1.2em;
   text-decoration: none;
-  transform: skewX(-37.5deg);
-  width: 75px;
+  width: 80px;
   text-align: center;
   vertical-align: top;
 }
@@ -61,7 +79,6 @@ riot-nav .menu-spacer {
   box-sizing: border-box;
   display: inline-block;
   padding: 10px;
-  transform: skewX(-37.5deg);
   width: 20px;
   height: 45px;
   text-align: center;
@@ -73,20 +90,21 @@ riot-nav a {
 }
 
 .cyan {
-  background-color: rgba(0, 174, 239, 0.5);
+  background-color: rgba(0, 174, 239, 0.4);
   color: rgba(255, 255, 255, 1);
 }
 
 .magenta {
-  background-color: rgba(236, 0, 140, 0.5);
+  background-color: rgba(236, 0, 140, 0.4);
   color: rgba(255, 242, 0, 1);
 }
 
 .yellow {
-  background-color: rgba(255, 242, 0, 0.6);
+  background-color: rgba(255, 242, 0, 0.4);
   color: rgba(256, 0, 140, 0.6);
 }
 
+/******************Testing transparency only*****************/
 #overlap-test {
   width: 200px;
   height: 400px;
@@ -95,4 +113,51 @@ riot-nav a {
   top: 15px;
   left: 400px;
   z-index: -13;
+}
+
+/******************Media Queries****************************/
+
+/***************** Above 1024 (expanded width) ***************/
+/************** Between 768 and 1024 (base width)*************/
+@media screen and (max-width: 1024px) {
+  riot-nav {
+    margin-top: 0;
+  }
+  riot-nav .menu-item {
+    width: 90px;
+  }
+}
+
+/*************** Between 600 and 768 (drop-down menu (large))***************/
+@media screen and (max-width: 768px) {
+  riot-nav {
+    width: 90px;
+    position: absolute;
+    top: 26px;
+    right: 60px;
+  }
+  riot-nav .menu-container {
+    height: 0;
+    overflow: hidden;
+  }
+
+  riot-nav .menu-item {
+    display: block;
+    margin-top: 5px;
+  }
+
+  #hamburger-box {
+    display: block;
+  }
+  riot-nav .menu-spacer {
+    display: none;
+  }
+  #logo-container {
+    margin-left: 30px;
+  }
+}
+
+/**************** Between 320 and 600 (drop-down menu (small))****************/
+@media screen and (max-width: 600px) {
+
 }

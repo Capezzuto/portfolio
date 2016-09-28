@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
+var jquery = require('jquery');
 
 module.exports = {
   entry: './src/index.js',
