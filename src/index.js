@@ -51,7 +51,7 @@ function routeHandler(routeSelected, id) {
   route ? route(id) : mount('page-not-found');
 }
 
-riot.route.base('/');
+// riot.route.base('/');
 riot.route.stop();
 riot.route.start(true);
 riot.route(routeHandler);

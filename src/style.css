@@ -12,7 +12,7 @@ p, li {
 }
 
 #content {
-  margin-top: 5em;
+  margin-top: 1em;
 }
 
 #logo {
@@ -25,6 +25,7 @@ p, li {
   margin: 16px 16px 8px;
   padding: 0;
   display: inline-block;
+
 }
 
 riot-nav {
@@ -34,22 +35,23 @@ riot-nav {
   display: inline-block;
   margin-right: -30px;
   transform: skewX(-37.5deg);
+  z-index: 5;
 }
 
 riot-nav .hamburger {
   display: block;
   background: url('/assets/hamburger.svg') no-repeat 0 0;
   background-size: contain;
-  width: 30px;
-  height: 30px;
+  width: 2rem;
+  height: 2rem;
   margin: 0 auto;
+  cursor: pointer;
 }
 
 #hamburger-box {
   display: none;
-  position: relative;
   border: 1px solid rgba(0,0,0,0.5);
-  max-height: 45px;
+  max-height: 3em;
   padding: 7px 10px;
 }
 
@@ -104,6 +106,30 @@ riot-nav a {
   color: rgba(256, 0, 140, 0.6);
 }
 
+site-card .skew {
+  transform: skewX(-37.5deg);
+  overflow:hidden;
+  width: 60%;
+  margin: 2rem auto;
+  max-height: 250px;
+  box-shadow: 1px 1px 2px 0px #444;
+}
+
+site-card .deskew {
+  transform: skewX(37.5deg);
+  margin-left: -18%;
+}
+
+site-card .site-image {
+  display: inline-block;
+  height: 250px;
+  float: left;
+}
+
+site-card .site-info {
+  display: inline-block;
+  padding: 1rem;
+}
 /******************Testing transparency only*****************/
 #overlap-test {
   width: 200px;
@@ -111,7 +137,7 @@ riot-nav a {
   background-color: #DDDDDD;
   position: absolute;
   top: 15px;
-  left: 400px;
+  left: 230px;
   z-index: -13;
 }
 
