@@ -24,7 +24,7 @@
         image: '../assets/Toiletz-640px.png',
         imagealt: 'Toiletz screen-grab',
         title: 'Toiletz',
-        url: 'http://www.shareat-us.com',
+        url: 'http://ec2-54-204-215-124.compute-1.amazonaws.com:3000/',
         summary: 'Toiletz is Yelp for public restrooms'
       },
     ];

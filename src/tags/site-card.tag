@@ -4,7 +4,7 @@
       <img class="site-image" src={opts.image} alt={opts.imagealt} />
       <div class="site-info">
         <h2>{opts.title}</h2>
-        <h4><a href={opts.url}>{opts.url}</a></h4>
+        <h6><a href={opts.url}>{opts.url}</a></h6>
         <p>{opts.summary}</p>
       </div>
     </div>
