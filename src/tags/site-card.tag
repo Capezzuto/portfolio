@@ -1,10 +1,11 @@
 <site-card>
   <div class="skew">
     <div class="deskew">
-      <img class="site-image" src={opts.image} alt={opts.imagealt} />
+      <a href={opts.url}>
+        <img class="site-image" src={opts.image} alt={opts.imagealt} />
+      </a>
       <div class="site-info">
-        <h2>{opts.title}</h2>
-        <h6><a href={opts.url}>{opts.url}</a></h6>
+        <a href={opts.url}><h2>{opts.title}</h2></a>
         <p>{opts.summary}</p>
       </div>
     </div>
