@@ -25,7 +25,7 @@ a {
   padding: 0;
   width: 100%;
 }
-
+/**************Logo Styles**************/
 #logo {
   font-size: 42pt;
   margin: 0;
@@ -38,7 +38,7 @@ a {
   display: inline-block;
 
 }
-
+/*************Navbar Styles*************/
 riot-nav {
   position: relative;
   margin-top: 30px;
@@ -98,26 +98,38 @@ riot-nav .menu-spacer {
   vertical-align: top;
 }
 
-.cyan {
-  background-color: rgba(0, 174, 239, 0.4);
-  color: rgba(255, 255, 255, 1);
+.nav-cyan {
+  color: rgba(0, 174, 239, 0.7);
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 174, 239, 0.7);
 }
 
-.magenta {
+.nav-magenta {
   background-color: rgba(236, 0, 140, 0.4);
   color: rgba(255, 242, 0, 1);
 }
 
-.yellow {
+.nav-yellow {
+  background-color: rgba(255, 242, 0, 0.4);
+  color: rgba(256, 0, 140, 0.6); /*yellow*/
+}
+
+.nav-cyan:hover {
+  background-color: rgba(0, 174, 239, 0.4);
+  color: rgba(255, 255, 255, 1);
+}
+
+.nav-magenta:hover {
+  background-color: rgba(236, 0, 140, 0.4);
+  color: rgba(255, 242, 0, 1);
+}
+
+.nav-yellow:hover {
   background-color: rgba(255, 242, 0, 0.4);
   color: rgba(256, 0, 140, 0.6);
 }
 
-.site-container {
-  max-width: 1024px;
-  margin: 0 auto;
-  display: block;
-}
+/*************Home Animation Styles*************/
 
 .animation-container {
   position: absolute;
@@ -153,13 +165,47 @@ riot-nav .menu-spacer {
   }
 
 }
+/***********Web Site Portfolio Styles***********/
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: block;
+}
+
 
 site-card {
   display: inline-block;
   margin: 10px 0px 15px 20px;
 }
 
-site-card .skew {
+.site-container {
+  width: 480px;
+  height: 267px;
+  position: relative;
+  background-size: cover;
+}
+
+.site-entry {
+        box-sizing: border-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+        transition: opacity 200ms linear, border 200ms ease-out;
+        background-color: rgba(205,0,115,0.5);
+        color: #FFF200;
+        padding: 10px;
+      }
+.site-entry:hover {
+  opacity: 1;
+  border-bottom: 5px solid #EC008C;
+}
+
+
+/*site-card .skew {
   transform: skewX(-37.5deg);
   overflow:hidden;
   max-width: 300px;
@@ -176,7 +222,7 @@ site-card .deskew {
 site-card .site-image {
   display: block;
   height: 250px;
-  /*margin-left: -55px;*/
+  /*margin-left: -55px;
 }
 
 site-card .site-info {
@@ -192,22 +238,14 @@ site-card .site-info h2 {
 
 site-card .site-info p {
   margin-left: -10px;
-}
-/******************Testing transparency only*****************/
-#overlap-test {
-  width: 200px;
-  height: 400px;
-  background-color: #DDDDDD;
-  position: absolute;
-  top: 15px;
-  left: 230px;
-  z-index: -13;
-}
+}*/
 
-/******************Media Queries****************************/
+/***********************************************************/
+/******************      Media Queries      ****************/
+/***********************************************************/
 
-/***************** Above 1024 (expanded width) ***************/
-/************** Between 768 and 1024 (base width)*************/
+/*************** Above 1024 (expanded width) ***************/
+/************* Between 768 and 1024 (base width) ***********/
 @media screen and (max-width: 1024px) {
   riot-nav {
     margin-top: 0;

@@ -2,16 +2,16 @@
   <a class="menu-item" id="hamburger-box"><div class="hamburger"></div></a>
 <div class="menu-container">
   <ul>
-    <li class="menu-spacer magenta"> </li>
-    <li class="menu-spacer cyan"> </li>
-    <li class="menu-spacer yellow"><p></p></li>
-    <a href="#"><li class="magenta menu-item"><p>Home</p></li></a>
-    <a href="#/web"><li class="cyan menu-item"><p>Web</p></li></a>
-    <a href="#/print"><li class="yellow menu-item"><p>Print</p></li></a>
-    <a href="#/data"><li class="magenta menu-item"><p>Data</p></li></a>
-    <a href="#/bio"><li class="cyan menu-item"><p>Bio</p></li></a>
-    <a href="#/reach"><li class="yellow menu-item"><p>Reach</p></li></a>
-    <li class="menu-spacer magenta"></li>
+    <li class="menu-spacer nav-magenta"> </li>
+    <li class="menu-spacer nav-cyan"> </li>
+    <li class="menu-spacer nav-yellow"><p></p></li>
+    <a href="#"><li class="nav-magenta menu-item"><p>Home</p></li></a>
+    <a href="#/web"><li class="nav-cyan menu-item"><p>Web</p></li></a>
+    <a href="#/print"><li class="nav-yellow menu-item"><p>Print</p></li></a>
+    <a href="#/data"><li class="nav-magenta menu-item"><p>Data</p></li></a>
+    <a href="#/bio"><li class="nav-cyan menu-item"><p>Bio</p></li></a>
+    <a href="#/reach"><li class="nav-yellow menu-item"><p>Reach</p></li></a>
+    <li class="menu-spacer nav-magenta"></li>
   </ul>
 </div>
 
