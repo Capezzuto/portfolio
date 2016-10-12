@@ -173,28 +173,26 @@ riot-nav .menu-spacer {
 
 .container {
   max-width: 1024px;
-  margin: 0 auto;
+  margin:  100px auto 0;
   display: block;
 }
 
 
 site-card {
   display: inline-block;
-  margin: 10px 0px 15px 20px;
+  margin: 10px 10px 15px;
 }
 
 .site-container {
   width: 480px;
   height: 267px;
-  position: relative;
+  overflow: hidden;
   background-size: cover;
+  margin: 0 auto;
 }
 
 .site-entry {
         box-sizing: border-box;
-        position: absolute;
-        top: 0;
-        left: 0;
         height: 100%;
         width: 100%;
         opacity: 0;
@@ -207,42 +205,6 @@ site-card {
   opacity: 1;
   border-bottom: 5px solid #EC008C;
 }
-
-
-/*site-card .skew {
-  transform: skewX(-37.5deg);
-  overflow:hidden;
-  max-width: 300px;
-  height: 410px;
-  margin: 0 auto;
-  box-shadow: 1px 1px 2px 0px #444;
-}
-
-site-card .deskew {
-  transform: skewX(37.5deg);
-  margin-left: -55px;
-}
-
-site-card .site-image {
-  display: block;
-  height: 250px;
-  /*margin-left: -55px;
-}
-
-site-card .site-info {
-  display: block;
-  padding: 1rem 0.5rem;
-  max-width: 250px;
-}
-
-site-card .site-info h2 {
-  margin: 0;
-  margin-left: 10px
-}
-
-site-card .site-info p {
-  margin-left: -10px;
-}*/
 
 /***********************************************************/
 /******************      Media Queries      ****************/
@@ -259,7 +221,13 @@ site-card .site-info p {
   }
 
   .container {
-    margin-top: 20px;
+    max-width: 768px;
+    margin: 140px auto 0;
+  }
+
+  .site-container {
+    width: 360px;
+    height: 202px;
   }
 
 }
@@ -270,7 +238,7 @@ site-card .site-info p {
     width: 100px;
     position: absolute;
     top: 26px;
-    right: 60px;
+    right: 50px;
   }
   riot-nav .menu-container {
     height: 0;
@@ -295,9 +263,71 @@ site-card .site-info p {
   #logo-container {
     margin-left: 30px;
   }
+  .container {
+    max-width: 500px;
+    margin-top: 100px;
+  }
+
+  .site-container {
+    width: 480px;
+    height: 267px;
+  }
 }
 
-/**************** Between 320 and 600 (drop-down menu (small))****************/
+/**************** Between 481 and 600 (drop-down menu (small))****************/
 @media screen and (max-width: 600px) {
+  riot-nav {
+    top: 20px;
+    right: 50px;
+  }
 
+  #logo {
+    font-size: 32pt;
+    margin: 0;
+    /*font-weight: 100;*/
+  }
+
+  .container {
+    max-width: 480px;
+  }
+  .site-container {
+    width: 400px;
+    height: 225px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  riot-nav {
+    top: 20px;
+    right: 50px;
+    width: 70px;
+  }
+
+  riot-nav .menu-item {
+    width: 70px;
+    margin-top: 1px;
+  }
+
+  #logo-container {
+    max-width: 300px;
+  }
+
+  #hamburger-box {
+    max-height: 2em;
+    padding: 7px 10px;
+  }
+
+  .hamburger {
+    max-height: 1.5rem;
+    max-width: 1.5rem;
+  }
+
+  .container {
+    margin-top: 120px;
+    max-width: 320px;
+  }
+  .site-container {
+    width: 300px;
+    height: 167px;
+  }
 }
