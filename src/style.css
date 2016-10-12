@@ -25,6 +25,40 @@ a {
   padding: 0;
   width: 100%;
 }
+
+.background-cyan {
+  background-color: rgba(0, 174, 239, 0.1);
+  border: 1px solid rgba(0, 174, 239, 0.2);
+  width: 600px;
+  height: 780px;
+  transform: skewX(-37.5deg);
+  position: absolute;
+  top: -5px;
+  left: -300px;
+  z-index: -100;
+}
+.background-magenta {
+  background-color: rgba(236, 0, 140, 0.1);
+  border: 1px solid rgba(236, 0, 140, 0.2);
+  width: 600px;
+  height: 780px;
+  transform: skewX(-37.5deg);
+  position: absolute;
+  top: -5px;
+  left: -300px;
+  z-index: -100;
+}
+.background-yellow {
+  background-color: rgba(255, 242, 0, 0.1);
+  border: 1px solid rgba(255, 242, 0, 0.2);
+  width: 600px;
+  height: 780px;
+  transform: skewX(-37.5deg);
+  position: absolute;
+  top: -5px;
+  left: -300px;
+  z-index: -100;
+}
 /**************Logo Styles**************/
 #logo {
   font-size: 42pt;
@@ -251,7 +285,7 @@ site-card {
   }
 
   .nav-cyan, .nav-magenta, .nav-yellow {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
   }
 
   #hamburger-box {
