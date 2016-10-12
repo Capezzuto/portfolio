@@ -99,33 +99,37 @@ riot-nav .menu-spacer {
 }
 
 .nav-cyan {
-  color: rgba(0, 174, 239, 0.7);
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0, 174, 239, 0.7);
+  color: rgba(0, 174, 239, 0.8);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 174, 239, 0.8);
 }
 
 .nav-magenta {
-  background-color: rgba(236, 0, 140, 0.4);
-  color: rgba(255, 242, 0, 1);
+  color: rgba(236, 0, 140, 0.6); /*magenta*/
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(236, 0, 140, 0.6); /*magenta*/
+  /*color: rgba(255, 242, 0, 1); */
 }
 
 .nav-yellow {
-  background-color: rgba(255, 242, 0, 0.4);
-  color: rgba(256, 0, 140, 0.6); /*yellow*/
+  color: rgba(240, 230, 0, 1);  /*yellow*/
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 242, 0, 1);  /*yellow*/
+  /*color: rgba(256, 0, 140, 0.6);*/ /*magenta*/
 }
 
 .nav-cyan:hover {
-  background-color: rgba(0, 174, 239, 0.4);
+  background-color: rgba(0, 174, 239, 0.8);
   color: rgba(255, 255, 255, 1);
 }
 
 .nav-magenta:hover {
-  background-color: rgba(236, 0, 140, 0.4);
+  background-color: rgba(236, 0, 140, 0.8);
   color: rgba(255, 242, 0, 1);
 }
 
 .nav-yellow:hover {
-  background-color: rgba(255, 242, 0, 0.4);
+  background-color: rgba(255, 242, 0, 0.8);
   color: rgba(256, 0, 140, 0.6);
 }
 
@@ -263,7 +267,7 @@ site-card .site-info p {
 /*************** Between 600 and 768 (drop-down menu (large))***************/
 @media screen and (max-width: 768px) {
   riot-nav {
-    width: 90px;
+    width: 100px;
     position: absolute;
     top: 26px;
     right: 60px;
@@ -276,6 +280,10 @@ site-card .site-info p {
   riot-nav .menu-item {
     display: block;
     margin-top: 5px;
+  }
+
+  .nav-cyan, .nav-magenta, .nav-yellow {
+    background-color: rgba(255, 255, 255, 0.8);
   }
 
   #hamburger-box {
