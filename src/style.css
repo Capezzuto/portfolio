@@ -240,6 +240,28 @@ site-card {
   border-bottom: 5px solid #EC008C;
 }
 
+/***************Print Portfolio Styles***************/
+
+.print-entry {
+  max-width: 156px;
+  max-height: 150px;
+  display: inline-block;
+  padding: 3px;
+  border: 1px solid rgba(236, 0, 140, 0.8); /*magenta*/
+  border: 1px solid rgba(0, 174, 239, 0.8);
+  margin: 5px;
+  background-color: #FFFFFF;
+}
+
+.print-entry img {
+  opacity: 0.5;
+}
+.print-entry img:hover {
+  opacity: 1;
+}
+
+
+
 /***********************************************************/
 /******************      Media Queries      ****************/
 /***********************************************************/
