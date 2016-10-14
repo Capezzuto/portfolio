@@ -15,7 +15,11 @@
     this.thumbs = {
       products: [
         {
-          pic: '../assets/thumbs/Products/Hang-Tag--InsideOutsideThumb.jpg',
+          pic: '../assets/thumbs/Products/GoldenStateTeeThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Products/July11FlyerThumb.jpg',
           link: '#'
         },
         {
@@ -43,21 +47,58 @@
           link: '#'
         },
         {
-          pic: '../assets/thumbs/Products/July11FlyerThumb.jpg',
+          pic: '../assets/thumbs/Products/Hang-Tag--InsideOutsideThumb.jpg',
           link: '#'
         },
         {
-          pic: '../assets/thumbs/Products/GoldenStateTeeThumb.jpg',
+          pic: '../assets/thumbs/Products/Business_Card_Front2_Back4Thumb.png',
           link: '#'
         },
+        {
+          pic: '../assets/thumbs/Products/Cafe_Display_V1_CWebThumb.jpg',
+          link: '#'
+        },
+
       ],
       illustrations: [
         {
-          pic: '../assets/thumbs/Illustration/2-3-74Thumb.jpg',
+          pic: '../assets/thumbs/Illustration/PsycheCthuluWebThumb.png',
           link: '#'
         },
         {
-          pic: '../assets/thumbs/Illustration/cottageThumb.png',
+          pic: '../assets/thumbs/Illustration/Tri-Color_1_RedWebThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Tri-Color_2_BlueWebThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Tri-Color_3_YellowWebThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Network_Blue_SpiralWebThumb.png',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Network_Yellow_Vertical-ZonesWebThumb.png',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Network_Orange_B&WWebThumb.png',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Network_Green_Vertical-StudyThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/Structure07WebThumb.jpg',
+          link: '#'
+        },
+        {
+          pic: '../assets/thumbs/Illustration/TronometryThumb.jpg',
           link: '#'
         },
         {
@@ -77,43 +118,7 @@
           link: '#'
         },
         {
-          pic: '../assets/thumbs/Illustration/TronometryThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Network_Orange_B&WWebThumb.png',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Network_Green_Vertical-StudyThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Network_Blue_SpiralWebThumb.png',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Network_Yellow_Vertical-ZonesWebThumb.png',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Structure07WebThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Tri-Color_1_RedWebThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Tri-Color_2_BlueWebThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/Tri-Color_3_YellowWebThumb.jpg',
-          link: '#'
-        },
-        {
-          pic: '../assets/thumbs/Illustration/PsycheCthuluWebThumb.png',
+          pic: '../assets/thumbs/Illustration/2-3-74Thumb.jpg',
           link: '#'
         },
 
