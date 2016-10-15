@@ -1,9 +1,10 @@
 <print-work>
-  <div class="background-magenta"></div>
+  <div class="overlay"></div>
+  <div class="background background-magenta"></div>
   <div class="container">
     <div><h2>Product Design and Advertising</h2></div>
     <div each={thumb in thumbs.products} class="print-entry">
-      <a href="{thumb.link}"><img src="{thumb.pic}" width="150px" height="150px"></a>
+      <img src="{thumb.pic}" width="150px" height="150px">
     </div>
     <div><h2>Illustration</h2></div>
     <div each={thumb in thumbs.illustrations} class="print-entry">
@@ -123,6 +124,7 @@
         },
 
       ]
-    }
+    };
+
   </script>
 </print-work>

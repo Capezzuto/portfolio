@@ -1,5 +1,5 @@
 <data-menu>
-  <div class="background-yellow"></div>
+  <div class="background background-yellow"></div>
 
   <h2>Coming soon: data visualizations</h2>
 

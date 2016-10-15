@@ -1,0 +1,15 @@
+$comfortaa: 'Comfortaa', Verdana, sans-serif;
+$abel: 'Abel', 'Arial Narrow', sans-serif;
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 100;
+  font-family: $comfortaa;
+}
+
+p, a, li {
+  font-family: $abel;
+}
+
+a {
+  text-decoration: none;
+}

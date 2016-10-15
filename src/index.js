@@ -1,4 +1,4 @@
-
+require('./styles/main.scss');
 const riot = require('riot');
 const riotNav = require('./tags/riot-nav.tag');
 require('./tags/home.tag');

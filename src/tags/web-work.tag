@@ -1,5 +1,5 @@
 <web-work>
-  <div class="background-cyan"></div>
+  <div class="background background-cyan"></div>
   <div class="container">
     <site-card
       each={site in sites}

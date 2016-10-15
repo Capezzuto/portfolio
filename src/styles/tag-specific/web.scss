@@ -1,0 +1,44 @@
+
+site-card {
+  display: inline-block;
+  margin: 10px 10px 15px;
+}
+
+.site-container {
+  width: 480px;
+  height: 267px;
+  overflow: hidden;
+  background-size: cover;
+  margin: 0 auto;
+  @media screen and (max-width: 1024px) {
+    width: 360px;
+    height: 202px;
+  }
+  @media screen and (max-width: 768px) {
+    width: 480px;
+    height: 267px;
+  }
+  @media screen and (max-width: 600px) {
+    width: 400px;
+    height: 225px;
+  }
+  @media screen and (max-width: 480px) {
+    width: 300px;
+    height: 167px;
+  }
+}
+
+.site-entry {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 200ms linear, border 200ms ease-out;
+  background-color: rgba(205,0,115,0.5);
+  color: #FFF200;
+  padding: 10px;
+  &:hover {
+    opacity: 1;
+    border-bottom: 5px solid #EC008C;
+  }
+}
