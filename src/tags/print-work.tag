@@ -1,15 +1,10 @@
 <print-work>
-  <div class="overlay"></div>
   <div class="background background-magenta"></div>
   <div class="container">
     <div><h2>Product Design and Advertising</h2></div>
-    <div each={thumb in thumbs.products} class="print-entry">
-      <img src="{thumb.pic}" width="150px" height="150px">
-    </div>
+    <img each={item in thumbs.products} class="print-entry" data="{item.link}" src="{item.pic}" width="150px" height="150px">
     <div><h2>Illustration</h2></div>
-    <div each={thumb in thumbs.illustrations} class="print-entry">
-      <img src="{thumb.pic}">
-    </div>
+    <img each={item in thumbs.illustrations} class="print-entry" data="{item.link}" src="{item.pic}" width="150px" height="150px">
   </div>
   <script>
     //eventually, get .json in this.on('mount', getDataFunction)
@@ -17,114 +12,128 @@
       products: [
         {
           pic: '../assets/thumbs/Products/GoldenStateTeeThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/GoldenStateTee.png'
         },
         {
           pic: '../assets/thumbs/Products/July11FlyerThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/July11FlyerWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Products/DMBBQ-Product-Line-FDA-BBQ-Thumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/DMBBQ-Product-Line-FDA-BBQ.jpg'
         },
         {
           pic: '../assets/thumbs/Products/DMBBQ-Product-Line-FDA-TM-Thumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/DMBBQ-Product-Line-FDA-TM.jpg'
         },
         {
           pic: '../assets/thumbs/Products/DMBBQ-Trail-Mix-HickorySmokedThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/DMBBQ-Trail-Mix-HickorySmoked.jpg'
         },
         {
           pic: '../assets/thumbs/Products/DMBBQ-Trail-Mix-HoneyRoastedThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/DMBBQ-Trail-Mix-HoneyRoasted.jpg'
         },
         {
           pic: '../assets/thumbs/Products/DMBBQ-Trail-Mix-SantaFeThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/DMBBQ-Trail-Mix-SantaFe.jpg'
         },
         {
           pic: '../assets/thumbs/Products/BizCardsThumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/BizCards.png'
         },
         {
           pic: '../assets/thumbs/Products/Hang-Tag--InsideOutsideThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/Hang-Tag--InsideOutside.jpg'
         },
         {
           pic: '../assets/thumbs/Products/Business_Card_Front2_Back4Thumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/Business_Card_Front2_Back4.jpg'
         },
         {
           pic: '../assets/thumbs/Products/Cafe_Display_V1_CWebThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Products/Cafe_Display_V1_CWeb.jpg'
         },
 
       ],
       illustrations: [
         {
           pic: '../assets/thumbs/Illustration/PsycheCthuluWebThumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/PsycheCthuluWeb.png'
         },
         {
           pic: '../assets/thumbs/Illustration/Tri-Color_1_RedWebThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Tri-Color_1_RedWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Tri-Color_2_BlueWebThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Tri-Color_2_BlueWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Tri-Color_3_YellowWebThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Tri-Color_3_YellowWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Network_Blue_SpiralWebThumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Network_Blue_SpiralWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Network_Yellow_Vertical-ZonesWebThumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Network_Yellow_Vertical-ZonesWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Network_Orange_B&WWebThumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Network_Orange_B&WWeb.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Network_Green_Vertical-StudyThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Network_Green_Vertical-Study.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Structure07WebThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Structure07Web.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/TronometryThumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Tronometry.jpg'
         },
         {
           pic: '../assets/thumbs/Illustration/Reclamation01Thumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Reclamation01.png'
         },
         {
           pic: '../assets/thumbs/Illustration/Reclamation02Thumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Reclamation02.png'
         },
         {
           pic: '../assets/thumbs/Illustration/Reclamation03Thumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Reclamation03.png'
         },
         {
           pic: '../assets/thumbs/Illustration/Reclamation04Thumb.png',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/Reclamation04.png'
         },
         {
           pic: '../assets/thumbs/Illustration/2-3-74Thumb.jpg',
-          link: '#'
+          link: 'https://s3-us-west-1.amazonaws.com/joseph.capezzuto.portfolio-items/Illustration/2-3-74.jpg'
         },
 
       ]
     };
+
+    $('body').on('click', '.print-entry', (event) => {
+      let $data = $(event.target).first().attr('data');
+
+      let selectedImage = `
+        <div class="selectedImage">
+          <img src="${$data}">
+        </div>
+      `;
+      $('.overlay').append(selectedImage).show();
+    });
+    $('.overlay').on('click', function(){
+      $('.overlay').html('').hide();
+    })
 
   </script>
 </print-work>
