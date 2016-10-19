@@ -1,7 +1,9 @@
 <data-menu>
   <div class="background background-yellow"></div>
 
-  <h2>Coming soon: data visualizations</h2>
+  <div class="container">
+    <h2>Coming soon: data visualizations</h2>
+  </div>
 
   <script>
   this.on('mount', function() {

@@ -1,6 +1,5 @@
 <home>
-  <h2>HOME</h2>
-  <animation></animation>  
+  <animation></animation>
   <script>
     require('./animation.tag');
     this.on('mount', function() {

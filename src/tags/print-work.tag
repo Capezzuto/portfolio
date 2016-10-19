@@ -1,25 +1,30 @@
 <print-work>
   <div class="background background-magenta"></div>
+  <div class="overlay"></div>
   <div class="container">
     <div><h2>Product Design and Advertising</h2></div>
-    <div each={item in thumbs.products} class="print-entry">
+    <div each={item, i in thumbs.products} class="print-entry">
       <img
+        data-cat="products"
         data-link="{item.link}"
         data-title="{item.title}"
         data-year="{item.year}"
         src="{item.pic}"
         width="150px"
-        height="150px">
+        height="150px"
+        index="{i}">
     </div>
     <div><h2>Illustration</h2></div>
-    <div each={item in thumbs.illustrations} class="print-entry">
+    <div each={item, i in thumbs.illustrations} class="print-entry">
       <img
+        data-cat="illustrations"
         data-link="{item.link}"
         data-title="{item.title}"
         data-year="{item.year}"
         src="{item.pic}"
         width="150px"
-        height="150px">
+        height="150px"
+        index="{i}">
     </div>
   </div>
   <script>
@@ -189,24 +194,61 @@
       ]
     };
 
-    $('body').on('click', '.print-entry', (event) => {
-      let $link = $(event.target).attr('data-link');
-      let $year = $(event.target).attr('data-year');
-      let $title = $(event.target).attr('data-title');
-      let selectedImage = `
-        <div class="selectedImage">
+    function buildSelectedImage(info) {
+      let {link, title, year} = info;
+      return `
+        <div id="selectedImage">
           <div>
-            <img src="${$link}">
-            <p class="caption">${$title}, ${$year}  </p>
+            <img src="${link}">
+            <p class="caption">${title}, ${year}  </p>
           </div>
         </div>
       `;
+    }
 
-      $('.overlay').append(selectedImage).show();
+    function getNextImage(i, category) {
+      console.log(`index: ${+i + 1}, category: ${category}`);
+    }
+
+    function getPrevImage(i, category) {
+      console.log(`index: ${i - 1}, category: ${category}`);
+    }
+
+    $('body').on('click', '.print-entry', (event) => {
+      let $image = $(event.target);
+      let link = $image.attr('data-link');
+      let year = $image.attr('data-year');
+      let title = $image.attr('data-title');
+      let index = $image.attr('index');
+      let cat = $image.attr('data-cat');
+      let selectedImage = buildSelectedImage({link, year, title});
+
+      $('.overlay').show().append(selectedImage);
+      if (+index > 0) {
+        console.log('index greater than zero');
+        $('#selectedImage').prepend('<div class="left-arrow"></div>');
+      }
+      if (+index + 1 < this.thumbs[cat].length) {
+        console.log('index+1 less than length');
+        $('#selectedImage').append('<div class="right-arrow"></div>');
+      }
+
+      $('#selectedImage').on('click', 'img', function(e) {
+        e.stopPropagation();
+      })
+      $('#selectedImage').on('click', '.right-arrow', function(e) {
+        e.stopPropagation();
+        getNextImage(index, cat);
+      });
+      $('#selectedImage').on('click', '.left-arrow', function(e) {
+        e.stopPropagation();
+        getPrevImage(index, cat);
+      })
     });
 
-    $('.overlay').on('click', function(){
+    $('body').on('click', '.overlay', function(){
       $('.overlay').html('').hide();
+
     })
 
   </script>
