@@ -12,4 +12,14 @@ p, a, li {
 
 a {
   text-decoration: none;
+  color: $cyan;
+  &:hover {
+    color: $lighterCyan;
+  }
+  &:active {
+    color: $darkerCyan;
+  }
+  &:visited {
+    color: $lighterCyan;
+  }
 }
