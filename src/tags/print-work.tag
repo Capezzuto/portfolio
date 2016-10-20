@@ -29,7 +29,7 @@
   </div>
   <script>
     //eventually, get .json in this.on('mount', getDataFunction)
-    this.thumbs = {
+    let thumbs = {
       products: [
         {
           pic: '../assets/thumbs/Products/GoldenStateTeeThumb.jpg',
@@ -194,56 +194,54 @@
       ]
     };
 
-    function buildSelectedImage(info) {
-      let {link, title, year} = info;
+    this.thumbs = thumbs;
+
+    function buildSelectedImage(index, cat) {
+      let selection = thumbs[cat][index];
       return `
         <div id="selectedImage">
           <div>
-            <img src="${link}">
-            <p class="caption">${title}, ${year}  </p>
+            <img src="${selection.link}">
+            <p class="caption">${selection.title}, ${selection.year}  </p>
           </div>
         </div>
       `;
     }
 
-    function getNextImage(i, category) {
-      console.log(`index: ${+i + 1}, category: ${category}`);
+    function getNewImage(index, category) {
+      let selectedImage = buildSelectedImage(index, category);
+      $('.overlay').html('').append(selectedImage);
+      addArrows(selectedImage, index, category);
     }
 
-    function getPrevImage(i, category) {
-      console.log(`index: ${i - 1}, category: ${category}`);
-    }
-
-    $('body').on('click', '.print-entry', (event) => {
-      let $image = $(event.target);
-      let link = $image.attr('data-link');
-      let year = $image.attr('data-year');
-      let title = $image.attr('data-title');
-      let index = $image.attr('index');
-      let cat = $image.attr('data-cat');
-      let selectedImage = buildSelectedImage({link, year, title});
-
-      $('.overlay').show().append(selectedImage);
+    function addArrows(template, index, category) {
       if (+index > 0) {
-        console.log('index greater than zero');
+        console.log('index greater than zero', template);
         $('#selectedImage').prepend('<div class="left-arrow"></div>');
       }
-      if (+index + 1 < this.thumbs[cat].length) {
-        console.log('index+1 less than length');
+      if (+index + 1 < thumbs[category].length) {
+        console.log('index+1 less than length', template);
         $('#selectedImage').append('<div class="right-arrow"></div>');
       }
-
       $('#selectedImage').on('click', 'img', function(e) {
         e.stopPropagation();
       })
       $('#selectedImage').on('click', '.right-arrow', function(e) {
         e.stopPropagation();
-        getNextImage(index, cat);
+        getNewImage(+index + 1, category);
       });
       $('#selectedImage').on('click', '.left-arrow', function(e) {
         e.stopPropagation();
-        getPrevImage(index, cat);
+        getNewImage(index - 1, category);
       })
+    }
+
+    $('body').on('click', '.print-entry', (event) => {
+      let index = $(event.target).attr('index');
+      let cat = $(event.target).attr('data-cat');
+      let selectedImage = buildSelectedImage(index, cat);
+      $('.overlay').show().append(selectedImage);
+      addArrows(selectedImage, index, cat);
     });
 
     $('body').on('click', '.overlay', function(){
