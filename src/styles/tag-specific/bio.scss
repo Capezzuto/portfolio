@@ -1,0 +1,148 @@
+#bio-container {
+  max-width: 95%;
+}
+
+.section {
+  display: inline-block;
+  width: 95%;
+  margin: 0 auto;
+  padding: 1.3rem;
+
+  h2, h3, h4, h5 {
+    text-align: left;
+    color: $magenta;
+  }
+
+  h2 {
+
+  }
+
+  h3 {
+    margin-left: 1rem;
+    color: $cyan;
+  }
+}
+
+.subsection {
+  margin-top: 4rem;
+}
+
+.block {
+  background-color: rgba($cyan, 0.2);
+  border: 1px solid rgba($cyan, 0.7);
+  transform: skewX(-37.5deg);
+  text-align: justify;
+  padding: 1rem 4rem;
+  max-width: 60%;
+  margin: 0 auto 1rem;
+  &:after {
+    content: '';
+    position: absolute;
+    background-color: rgba($magenta, 0.1);
+    border: 1px solid rgba($magenta, 0.7);
+    top: 10px;
+    left: -15px;
+    bottom: -20px;
+    right: 15px;
+    z-index: -1;
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    background-color: rgba($yellow, 0.2);
+    border: 1px solid $yellow;
+    top: -15px;
+    left: -30px;
+    right: 30px;
+    bottom: 15px;
+    z-index: -2;
+  }
+}
+
+#bio {
+  float: left;
+  max-width: 70%;
+  .block {
+    background-color: rgba($magenta, 0.1);
+    max-width: 100%
+  }
+}
+
+.profile-pic {
+  margin-top: 1.5rem;
+  position: relative;
+  float: right;
+  z-index: 1;
+  img {
+    border: 1px solid $cyan;
+    padding: 3px;
+  }
+  &:before {
+    content: '';
+    width: 192px;
+    height: 192px;
+    top: 10px;
+    left: 15px;
+    border: 1px solid $magenta;
+    position: absolute;
+    z-index: -1;
+  }
+  &:after {
+    content: '';
+    width: 192px;
+    height: 192px;
+    top: 10px;
+    left: -15px;
+    border: 1px solid $yellow;
+    position: absolute;
+    z-index: -2;
+  }
+}
+
+#skills {
+  width: 100%;
+  td {
+    width: 20%;
+    text-align: center;
+  }
+}
+
+.skew-row {
+  transform: skewX(-37.5deg);
+}
+
+.deskew-cell {
+  color: #FFFFFF;
+  transform: skewX(37.5deg);
+  margin: 0.5em 30px;
+  @media screen and (max-width: 768px) {
+    margin: 0.5em 10px;
+  }
+  @media screen and (max-width: 600px) {
+    margin: 0.5em 0;
+  }
+}
+
+.r1 {
+  background-color: rgba($magenta, 0.3);
+}
+
+.r2 {
+  background-color: rgba($magenta, 0.4);
+
+}
+
+.r3 {
+  background-color: rgba($magenta, 0.5);
+
+}
+
+.r4 {
+  background-color: rgba($magenta, 0.6);
+
+}
+
+#education {
+  width: 80%;
+  margin: 0 auto 5rem;
+}

@@ -1,13 +1,14 @@
 $comfortaa: 'Comfortaa', Verdana, sans-serif;
 $abel: 'Abel', 'Arial Narrow', sans-serif;
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, th {
   font-weight: 100;
   font-family: $comfortaa;
 }
 
-p, a, li {
+p, a, li, td {
   font-family: $abel;
+  margin: 0;
 }
 
 a {

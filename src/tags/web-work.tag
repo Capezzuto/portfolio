@@ -27,10 +27,9 @@
       {
         image: '../assets/PinWall-640px.png',
         title: 'PinWall',
-        url: '​https://fathomless-ravine-28520.herokuapp.com/',
+        url: 'https://fathomless-ravine-28520.herokuapp.com',
         summary: 'A virtual bulletin board for intra-organizational communication'
-      },
-
+      }
     ];
     this.on('mount', () => {
       riot.mount('site-card');

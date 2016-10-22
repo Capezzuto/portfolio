@@ -57,17 +57,25 @@ body {
 }
 
 .container {
-  max-width: 90%;
+  max-width: 1000px;
   margin:  100px auto 0;
   display: block;
+
   @media screen and (max-width: 1024px) {
+    max-width: 760px;
     margin-top: 150px;
   }
   @media screen and (max-width: 768px) {
+    max-width: 80%;
     margin-top: 100px;
   }
   @media screen and (max-width: 480px) {
     margin-top: 120px;
     max-width: 320px;
   }
+}
+
+.deskew {
+  transform: skewX(37.5deg);
+  margin: 0 50px;
 }
