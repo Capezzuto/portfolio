@@ -38,8 +38,7 @@
   <script>
 
     this.on('mount', () => {
-      console.log('window width:', $(window).width());
-      console.log('screen width', screen.width);
+      
       $('.revealer.phone').on('click', function() {
         $('<div class="revealed"><div>310.210.3041</div></div>')
           .insertAfter(this)

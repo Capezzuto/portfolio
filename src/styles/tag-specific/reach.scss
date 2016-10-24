@@ -6,7 +6,15 @@
       margin-top: 2.5em;
     }
   }
+  @media screen and (max-width: 1024px) {
+    margin-top: 150px;
+  }
+  @media screen and (max-width: 768px) {
+    margin-top: 100px;
+  }
+
   @media screen and (max-width: 480px) {
+    margin-top: 120px;
     margin-left: 4%;
   }
 
