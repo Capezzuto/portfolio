@@ -6,7 +6,7 @@ h1, h2, h3, h4, h5, h6, th {
   font-family: $comfortaa;
 }
 
-p, a, li, td {
+p, a, li, td, div {
   font-family: $abel;
   margin: 0;
 }
@@ -21,6 +21,6 @@ a {
     color: $darkerCyan;
   }
   &:visited {
-    color: $lighterCyan;
+    color: $cyan;
   }
 }

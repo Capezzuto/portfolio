@@ -1,0 +1,72 @@
+.reach-container {
+  margin: 100px 0 50px 30px;
+  > div {
+    margin: 0.5em 0;
+    @media screen and (max-width: 480px) {
+      margin-top: 2.5em;
+    }
+  }
+  @media screen and (max-width: 480px) {
+    margin-left: 4%;
+  }
+
+}
+
+.revealer {
+  box-sizing: border-box;
+  border: 1px solid $cyan;
+  width: 80px;
+  cursor: pointer;
+  transform: skewX(-37.5deg);
+  background-color: $cyan;
+  color: #FFFFFF;
+  display: inline-block;
+  padding: 0.2em 0;
+  margin: 0;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  div {
+    transform: skewX(37.5deg);
+  }
+  &:hover {
+    background-color: $darkerCyan;
+    border: 1px solid $darkerCyan;
+
+  }
+  @media screen and (max-width: 480px) {
+    display: block;
+  }
+}
+
+.revealed {
+  box-sizing: border-box;
+  border: 1px solid $cyan;
+  display: inline-block;
+  transform: skewX(-37.5deg);
+  width: 0;
+  padding: 0;
+  margin: 0 0 0 -0.3em;
+  overflow: hidden;
+  position: absolute;
+  z-index: 1;
+  background-color: rgba($white, 0.5);
+  > div {
+    transform: skewX(37.5deg);
+    text-align: right;
+  }
+
+}
+
+.been {
+  width: 320px;
+  padding: 0.2em 0.5em;
+  a {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.revealed div {
+  color: $cyan;
+}
