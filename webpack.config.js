@@ -1,6 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
-var jquery = require('jquery');
+var CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
@@ -11,6 +11,13 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       riot: 'riot'
+    }),
+    new CompressionPlugin({
+      asset: '[path].gz[query]',
+      algorithm: 'gzip',
+      test: /\.js$|\.tag$|\.css$|\.scss$|\.html$|\.(png | jpg | gif | woff | otf)$/,
+      threshold: 10240,
+      minRatio: 0.8      
     })
   ],
   resolve: {
