@@ -3,7 +3,6 @@
 
   <script>
   this.on('mount', function() {
-    console.log('page-not-found loaded')
   })
   </script>
 </page-not-found>

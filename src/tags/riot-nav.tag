@@ -21,7 +21,7 @@
     window.$ = $;
 
     this.on('mount', () => {
-      console.log("This is working in the navbar");
+
       $('#hamburger-box').on('click', (e) => {
         let currentNavHeight = $('.menu-container').height();
 

@@ -44,17 +44,6 @@
       }
 
       this.on('mount', () => {
-        // var i = 0;
-        // var max = Math.ceil(window.innerWidth / 100);
-        // var timer = setInterval(function() {
-        //   createShard(getRandomAttr());
-        //   i++;
-        //   if (i === max) {
-        //     console.log('clearing timer');
-        //     clearInterval(timer);
-        //   }
-        // }, 400);
-        console.log('animation mounted...');
         for (let i = 0; i < Math.ceil(window.innerWidth /100); i++ ) {
           appendAndAnimateShard(getRandomAttr());
         }
