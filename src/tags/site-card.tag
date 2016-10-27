@@ -9,9 +9,7 @@
   </div>
 
   <script>
-    this.on('mount', function() {
-      console.log('site_card loaded..');
-    })
+    
   </script>
 
 </site-card>

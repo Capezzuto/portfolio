@@ -216,11 +216,9 @@
 
     function addArrows(template, index, category) {
       if (+index > 0) {
-        console.log('index greater than zero', template);
         $('#selectedImage').prepend('<div class="left-arrow"></div>');
       }
       if (+index + 1 < thumbs[category].length) {
-        console.log('index+1 less than length', template);
         $('#selectedImage').append('<div class="right-arrow"></div>');
       }
       $('#selectedImage').on('click', 'img', function(e) {
