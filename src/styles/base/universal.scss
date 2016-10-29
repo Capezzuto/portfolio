@@ -38,13 +38,25 @@ body {
 #logo {
   font-size: 42pt;
   margin: 0;
+  opacity: 0;
+  animation: fadeIn 1100ms ease-in forwards 1600ms;
   @media screen and (max-width: 600px) {
     font-size: 32pt;
     margin: 0;
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 #logo-container {
+  position: relative;
   margin: 16px 16px 8px;
   padding: 0;
   display: inline-block;
@@ -53,6 +65,44 @@ body {
   }
   @media screen and (max-width: 480px) {
     max-width: 300px;
+  }
+}
+
+#logo-core {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  transform: skewX(-37.5deg);
+  top: 17px;
+  left: 276px;
+  background-color: $lighterCyan;
+  z-index: -2;
+  animation:flare 1200ms linear forwards;
+}
+
+@keyframes flare {
+  0% {
+    opacity: 0;
+    background-color: $brightLightCyan;
+    box-shadow: 0px 0px 51px 1px rgba($haloCyan,0);
+  }
+
+  60% {
+    opacity: 0.6;
+    background-color: $brightLightCyan;
+    box-shadow: 0px 0px 51px 3px rgba($haloCyan,0.3);
+  }
+
+  80% {
+    opacity: 1;
+    background-color: $brightLightCyan;
+    box-shadow: 0px 0px 51px 5px rgba($haloCyan,0.5);
+  }
+
+  100% {
+    opacity: 1;
+    background-color: $lighterCyan;
+    box-shadow: 0px 0px 51px 3px rgba($haloCyan,0);
   }
 }
 
