@@ -44,6 +44,7 @@
       }
 
       this.on('mount', () => {
+        let interval = 2048;
         for (let i = 0; i < Math.ceil(window.innerWidth /100); i++ ) {
           appendAndAnimateShard(getRandomAttr());
         }
