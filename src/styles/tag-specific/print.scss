@@ -32,7 +32,7 @@
   height: 100vh;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin: 0 auto;
   div {
@@ -53,18 +53,23 @@
   }
 }
 
-.left-arrow {
+.left-arrow, .right-arrow {
   width: 40px;
   height: 45px;
-  background: url('/assets/arrow-left.svg') no-repeat 0 0 / contain;
   opacity: 0.7;
-  padding-bottom: 50px;
+  padding-bottom: 8%;
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.left-arrow {
+  background: url('/assets/arrow-left.svg') no-repeat 0 0 / contain;
+  margin-left: 2%;
 }
 
 .right-arrow {
-  width: 40px;
-  height: 45px;
   background: url('/assets/arrow-right.svg') no-repeat 0 0 / contain;
-  opacity: 0.7;
-  padding-bottom: 50px;
+  margin-right: 2%;
 }

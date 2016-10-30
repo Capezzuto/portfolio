@@ -215,11 +215,14 @@
     }
 
     function addArrows(template, index, category) {
-      if (+index > 0) {
-        $('#selectedImage').prepend('<div class="left-arrow"></div>');
+      $('#selectedImage').prepend('<div class="left-arrow"></div>');
+      $('#selectedImage').append('<div class="right-arrow"></div>');
+      if (+index === 0) {
+        $('.left-arrow').css("visibility", "hidden");
       }
-      if (+index + 1 < thumbs[category].length) {
-        $('#selectedImage').append('<div class="right-arrow"></div>');
+      if (+index + 1 === thumbs[category].length) {
+        $('.right-arrow').css("visibility", "hidden");
+
       }
       $('#selectedImage').on('click', 'img', function(e) {
         e.stopPropagation();
