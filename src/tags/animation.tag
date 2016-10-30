@@ -45,9 +45,16 @@
 
       this.on('mount', () => {
         let interval = 2048;
-        for (let i = 0; i < Math.ceil(window.innerWidth /100); i++ ) {
-          appendAndAnimateShard(getRandomAttr());
+        let i = 0;
+        function timedRelease(interval) {
+          window.setTimeout(() => {
+            appendAndAnimateShard(getRandomAttr());
+            i++;
+            if ( i < Math.ceil(window.innerWidth / 100) ) timedRelease(interval / 2);
+          }, interval);
         }
+
+      timedRelease(interval);
       });
     </script>
 </animation>
