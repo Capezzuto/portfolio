@@ -78,6 +78,16 @@ body {
   background-color: $lighterCyan;
   z-index: -2;
   animation:flare 1200ms linear forwards;
+  @media screen and (max-width:600px) {
+    height: 22px;
+    width: 22px;
+    top: 12px;
+    left: 212px;
+  }
+  @media screen and (max-width: 480px) {
+    top: 60px;
+    left: 120px;
+  }
 }
 
 @keyframes flare {
