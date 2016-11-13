@@ -15,7 +15,7 @@
       </div>
       <div class="been revealed">
         <div>
-          <a href="https://github.com/Capezzuto">
+          <a href="https://github.com/Capezzuto" target="_blank">
             https://github.com/Capezzuto
           </a>
         </div>
@@ -27,8 +27,20 @@
       </div>
       <div class="been revealed">
         <div>
-          <a href="https://www.linkedin.com/in/joseph-capezzuto">
+          <a href="https://www.linkedin.com/in/joseph-capezzuto" target="_blank">
             https://www.linkedin.com/in/joseph-capezzuto
+          </a>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="revealer">
+        <div>Instagram:</div>
+      </div>
+      <div class="been revealed">
+        <div>
+          <a href="https://www.instagram.com/josephcapezzuto/" target="_blank">
+            https://www.instagram.com/josephcapezzuto/
           </a>
         </div>
       </div>
@@ -38,7 +50,7 @@
   <script>
 
     this.on('mount', () => {
-      
+
       $('.revealer.phone').on('click', function() {
         $('<div class="revealed"><div>310.210.3041</div></div>')
           .insertAfter(this)
