@@ -76,7 +76,7 @@ body {
   top: 17px;
   left: 276px;
   background-color: rgba($cyan, 0.5);
-  z-index: -2;
+  z-index: -3;
   animation:flare-cyan 1200ms linear forwards;
   &:before {
     content: '';
@@ -86,6 +86,7 @@ body {
     left: 7px;
     bottom: -10px;
     right: -7px;
+    z-index: -4;
     animation: flare-magenta 1200ms linear forwards 1000ms;
   }
   &:after {
@@ -96,6 +97,7 @@ body {
     left: 17px;
     bottom: -5px;
     right: -17px;
+    z-index: -2;
     animation: flare-yellow 1200ms linear forwards 1500ms;
   }
   @media screen and (max-width:600px) {
@@ -131,7 +133,7 @@ body {
 
   100% {
     opacity: 1;
-    background-color: $lighterCyan;
+    background-color: rgba($lighterCyan, 0.7);
     box-shadow: 0px 0px 51px 3px rgba($haloCyan,0);
   }
 }
