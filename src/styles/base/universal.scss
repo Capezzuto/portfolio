@@ -39,7 +39,7 @@ body {
   font-size: 3.5em;
   margin: 0;
   opacity: 0;
-  animation: fadeIn 1100ms ease-in forwards 1600ms;
+  animation: fadeIn 1100ms ease-in forwards 3000ms;
   @media screen and (max-width: 600px) {
     font-size: 2.65em;
     margin: 0;
@@ -75,9 +75,29 @@ body {
   transform: skewX(-37.5deg);
   top: 17px;
   left: 276px;
-  background-color: $lighterCyan;
+  background-color: rgba($cyan, 0.5);
   z-index: -2;
-  animation:flare 1200ms linear forwards;
+  animation:flare-cyan 1200ms linear forwards;
+  &:before {
+    content: '';
+    position: absolute;
+    background-color: rgba($lighterMagenta, 0);
+    top: 10px;
+    left: 7px;
+    bottom: -10px;
+    right: -7px;
+    animation: flare-magenta 1200ms linear forwards 1000ms;
+  }
+  &:after {
+    content: '';
+    position: absolute;
+    background-color: rgba($yellow, 00);
+    top: 5px;
+    left: 17px;
+    bottom: -5px;
+    right: -17px;
+    animation: flare-yellow 1200ms linear forwards 1500ms;
+  }
   @media screen and (max-width:600px) {
     height: 1.45em;
     width: 1.45em;
@@ -90,7 +110,7 @@ body {
   }
 }
 
-@keyframes flare {
+@keyframes flare-cyan {
   0% {
     opacity: 0;
     background-color: $brightLightCyan;
@@ -113,6 +133,56 @@ body {
     opacity: 1;
     background-color: $lighterCyan;
     box-shadow: 0px 0px 51px 3px rgba($haloCyan,0);
+  }
+}
+@keyframes flare-magenta {
+  0% {
+    opacity: 0;
+    background-color: $brightLightMagenta;
+    box-shadow: 0px 0px 51px 1px rgba($haloMagenta,0);
+  }
+
+  60% {
+    opacity: 0.6;
+    background-color: $brightLightMagenta;
+    box-shadow: 0px 0px 51px 3px rgba($haloMagenta,0.3);
+  }
+
+  80% {
+    opacity: 1;
+    background-color: $brightLightMagenta;
+    box-shadow: 0px 0px 51px 5px rgba($haloMagenta,0.5);
+  }
+
+  100% {
+    opacity: 1;
+    background-color: rgba($lighterMagenta, 0.5);
+    box-shadow: 0px 0px 51px 3px rgba($haloMagenta,0);
+  }
+}
+@keyframes flare-yellow {
+  0% {
+    opacity: 0;
+    background-color: $brightLightYellow;
+    box-shadow: 0px 0px 51px 1px rgba($haloYellow,0);
+  }
+
+  60% {
+    opacity: 0.6;
+    background-color: $brightLightYellow;
+    box-shadow: 0px 0px 51px 3px rgba($haloYellow,0.3);
+  }
+
+  80% {
+    opacity: 1;
+    background-color: $brightLightYellow;
+    box-shadow: 0px 0px 51px 5px rgba($haloYellow,0.5);
+  }
+
+  100% {
+    opacity: 1;
+    background-color: rgba($yellow, 0.5);
+    box-shadow: 0px 0px 51px 3px rgba($haloYellow,0);
   }
 }
 
