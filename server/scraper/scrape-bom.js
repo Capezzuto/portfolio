@@ -30,6 +30,7 @@ module.exports = {
                       }).get();
 
       let totalGross = $('#body').find('tr').last().prev('tr').find('tr').last().find('td').eq(1).text();
+      totalGross = Number(totalGross.replace(/\D/g, ''));
 
       console.log(`totalGross = ${totalGross}`);
 
@@ -56,7 +57,6 @@ module.exports = {
 
       _writeToFile('weekly-data.json', weeklyDataFile, jsonData, arg.week, arg.year)
 
-      // res.status(200).send(jsonData);
     });
 
 
@@ -100,8 +100,9 @@ module.exports = {
         }
         return obj;
       }, { date: arg.date, week: arg.week  });
+
       _writeToFile('daily-data.json', dailyDataFile, jsonData, arg.date);
-      // res.status(200).send(jsonData);
+
     })
   }
 }
