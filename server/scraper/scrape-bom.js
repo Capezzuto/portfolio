@@ -120,6 +120,11 @@ function _writeToFile(fileName, oldData, newData, time, year) {
 
 }
 
+/********************************************************************************
+** process.argv's first argument (args[0]) should be a string: 'week' or 'day' **
+** process.argv's second argument (args[1]) should be the year or date         **
+** process.argv's third argument (args[2]) should be the week                  **
+********************************************************************************/
 if (args[0] === 'week') {
   module.exports.getWeeklyData({ year: args[1], week: args[2] });
 }
