@@ -1,12 +1,26 @@
 <data-menu>
   <div class="background background-yellow"></div>
   <style>
-    .area:hover {
-      opacity: 1;
+    #tooltip {
+      background-color: #000;
+      min-width: 100px;
+      min-height: 20px;
+      z-index: 40;
+      color: #FFF;
+      padding: 10px;
+      border-radius: 15px;
     }
-    .legend-entry:hover {
-      opacity: 1;
+
+    #tooltip h4 {
+      margin: 0;
+      margin-bottom: 10px;
     }
+
+    #tooltip h5 {
+      margin: 0;
+      margin-bottom: 5px;
+    }
+
 
   </style>
   <div class="container">
@@ -26,7 +40,8 @@
     const parseTime = d3.timeParse('%Y-%m-%d');
     const getDay = d3.timeFormat('%a');
 
-    const svg = d3.select('.container').append('svg').attr('height', '75vh').attr('width', '100%');
+    const svg = d3.select('.container').append('svg').attr('height', 700).attr('width', '100%');
+    const tooltip = d3.select('.container').append('div').attr('id', 'tooltip').style('opacity', 0).style('position', 'absolute');
 
     const height = 400;
     const width = 700;
@@ -54,6 +69,7 @@
     axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
       .then((response) => {
         const data = response.data;
+        console.log(data);
         const movieKeys = ['movie1','movie2','movie3','movie4','movie5'];
         let top5 = [];
         for (let i = 1; i < 6; i++) {
@@ -92,7 +108,7 @@
                         .y1((d) => y(d[1]));
 
         let chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
-        let legend = svg.append('g').attr('transform', 'translate(735, 0)');
+        let legend = svg.append('g').attr('transform', 'translate(735, 0)').attr('id', 'legend');
 
         chartGroup.append('g')
                   .attr('class', 'axis')
@@ -106,19 +122,43 @@
                     .data(stacked)
                     .enter().append('g')
                       .attr('class', 'area')
+                      .attr('opacity', 0.5)
+                      .on('mouseover', function(d, i) {
+                        d3.select(this).attr('opacity', 1);
+                        d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 1);
+                        // console.log(d.index);
+                        tooltip.style('left', `${300}px`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
+                          <h5>Weekly Total:</h5><p>$${data.weekTotals[d.index + 1].week_gross.toLocaleString()}</p>`);
+
+                      })
+                      .on('mouseout', function(d, i) {
+                        d3.select(this).attr('opacity', 0.5);
+                        d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 0.5);
+                        tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                      })
                     .append('path')
                       .transition().duration(1000).ease(d3.easeLinear)
-                      .attr('class','area')
                       .attr('fill', (d, i) => colorScheme1[i])
-                      .attr('opacity', 0.5)
-                      .attr('d', (d) => area(d));
+                      .attr('d', (d) => area(d))
 
 
         let legendEntry = legend.selectAll('g.legend-entry')
-                                  .data(top5)
+                                  .data(stacked)
                                   .enter().append('g')
                                     .attr('class', 'legend-entry')
-                                    .attr('opacity', 0.5);
+                                    .attr('opacity', 0.5)
+                                    .on('mouseover', function(d, i) {
+                                      d3.select(this).attr('opacity', 1);
+                                      d3.selectAll(`.area:nth-child(${i+3})`).attr('opacity', 1);
+                                      tooltip.style('left', `${300}px`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
+                                        <h5>Weekly Total:</h5><p>$${data.weekTotals[d.index + 1].week_gross.toLocaleString()}</p>`);
+                                    })
+                                    .on('mouseout', function(d, i) {
+                                      d3.select(this).attr('opacity', 0.5);
+                                      d3.selectAll(`.area:nth-child(${i+3})`).attr('opacity', 0.5);
+                                      tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                                    });
+
 
         legendEntry.append('rect')
                     .attr('fill', (d, i) => colorScheme1[i])
@@ -127,14 +167,14 @@
                     .attr('width', 30)
                     .attr('height', 30)
                     .attr('x', 15)
-                    .attr('y', (d, i) => i * 50)
+                    .attr('y', (d, i) => i * 50);
 
         legendEntry.append('text')
                     .attr('x', 0)
                     .attr('y', (d, i) => i * 50 + 20)
                     .attr('fill', (d, i) => colorScheme1[i])
                     .attr('text-anchor', 'end')
-                    .text(d => d);
+                    .text(d => d.key);
 
       })
       .catch((err) => {
