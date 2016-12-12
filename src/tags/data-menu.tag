@@ -116,7 +116,7 @@
                   .call(d3.axisBottom(x).ticks(7));
         chartGroup.append('g')
                   .attr('class', 'axis')
-                  .call(d3.axisLeft(y));
+                  .call(d3.axisLeft(y).tickFormat(d3.format('$,.0f')));
 
         chartGroup.selectAll('g.area')
                     .data(stacked)
