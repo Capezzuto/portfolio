@@ -83,23 +83,23 @@ module.exports = {
 
       let jsonData = dailyData.reduce((obj, curr, i) => {
         let x = i % 11;
-        let entry = Math.floor(i/11) + 1;
+        let entry = Math.floor(i/11);
         switch(x) {
-          case 0: obj[entry] = { rank_today: Number(curr) }; break;
-          case 1: obj[entry]['rank_yesterday'] = Number(curr) || 0; break;
-          case 2: obj[entry]['title'] = curr; break;
-          case 3: obj[entry]['studio'] = curr; break;
-          case 4: obj[entry]['daily_gross'] = Number(curr.replace(/\D/g, '')); break;
-          case 5: obj[entry]['pct_change_yd'] = parseInt(curr.replace(/\,/g, ''), 10) || 0; break;
-          case 6: obj[entry]['pct_change_lw'] = parseInt(curr.replace(/\,/g, ''), 10) || 0; break;
-          case 7: obj[entry]['theaters'] = Number(curr.replace(/\D/g, '')); break;
-          case 8: obj[entry]['avg'] = Number(curr.replace(/\D/g, '')); break;
-          case 9: obj[entry]['total'] = Number(curr.replace(/\D/g, '')); break;
-          case 10: obj[entry]['day'] = Number(curr); break;
+          case 0: obj.top10[entry] = { rank_today: Number(curr) }; break;
+          case 1: obj.top10[entry]['rank_yesterday'] = Number(curr) || 0; break;
+          case 2: obj.top10[entry]['title'] = curr; break;
+          case 3: obj.top10[entry]['studio'] = curr; break;
+          case 4: obj.top10[entry]['daily_gross'] = Number(curr.replace(/\D/g, '')); break;
+          case 5: obj.top10[entry]['pct_change_yd'] = parseInt(curr.replace(/\,/g, ''), 10) || 0; break;
+          case 6: obj.top10[entry]['pct_change_lw'] = parseInt(curr.replace(/\,/g, ''), 10) || 0; break;
+          case 7: obj.top10[entry]['theaters'] = Number(curr.replace(/\D/g, '')); break;
+          case 8: obj.top10[entry]['avg'] = Number(curr.replace(/\D/g, '')); break;
+          case 9: obj.top10[entry]['total'] = Number(curr.replace(/\D/g, '')); break;
+          case 10: obj.top10[entry]['day'] = Number(curr); break;
           default: break;
         }
         return obj;
-      }, { date: arg.date, week: arg.week  });
+      }, { date: arg.date, week: arg.week, top10: [] });
 
       _writeToFile('daily-data.json', dailyDataFile, jsonData, arg.date);
 
