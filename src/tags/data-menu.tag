@@ -162,8 +162,6 @@
 
         legendEntry.append('rect')
                     .attr('fill', (d, i) => colorScheme1[i])
-                    // .attr('class', 'area')
-                    // .attr('opacity', 0.3)
                     .attr('width', 30)
                     .attr('height', 30)
                     .attr('x', 15)

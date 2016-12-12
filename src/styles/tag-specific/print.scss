@@ -35,6 +35,7 @@
   justify-content: space-between;
   align-items: center;
   margin: 0 auto;
+  opacity: 0;
   div {
     text-align: left;
   }
@@ -51,6 +52,16 @@
     padding-left: 5%;
     font-size: 0.9em;
   }
+}
+
+#next-right-image {
+  position: absolute;
+  right: -500px;
+}
+
+#next-left-image {
+  position: absolute;
+  left: -500px;
 }
 
 .left-arrow, .right-arrow {

@@ -200,7 +200,7 @@
       let selection = thumbs[cat][index];
       return `
         <div id="selectedImage">
-          <div>
+          <div class="selectWrapper">
             <img src="${selection.link}">
             <p class="caption">${selection.title}, ${selection.year}  </p>
           </div>
@@ -208,10 +208,24 @@
       `;
     }
 
+    function buildAdjacentImage(side = 'right', index, cat) {
+      if (side === 'right') index += 1;
+      if (side === 'left') index -= 1;
+      let selection = thumbs[cat][index];
+      return `
+        <div id="next-${side}-image">
+          <img src="${selection.link}"
+        </div>
+      `
+    }
+
     function getNewImage(index, category) {
       let selectedImage = buildSelectedImage(index, category);
       $('.overlay').html('').append(selectedImage);
+      $('#selectedImage').animate({'opacity': 1}, 300);
       addArrows(selectedImage, index, category);
+      if (thumbs[category][index + 1]) $('.overlay').append(buildAdjacentImage('right', index, category));
+      if (thumbs[category][index - 1]) $('.overlay').append(buildAdjacentImage('left', index, category));
     }
 
     function addArrows(template, index, category) {
@@ -229,25 +243,29 @@
       })
       $('#selectedImage').on('click', '.right-arrow', function(e) {
         e.stopPropagation();
-        getNewImage(+index + 1, category);
+        $('.selectWrapper').css({ 'transform': 'translateX(80px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
+        setTimeout(() => {
+          getNewImage(+index + 1, category)
+        }, 300);
       });
       $('#selectedImage').on('click', '.left-arrow', function(e) {
         e.stopPropagation();
-        getNewImage(index - 1, category);
+        $('.selectWrapper').css({ 'transform': 'translateX(-80px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
+        setTimeout(() => {
+          getNewImage(index - 1, category)
+        }, 300);
       })
     }
 
     $('body').on('click', '.print-entry', (event) => {
       let index = $(event.target).attr('index');
       let cat = $(event.target).attr('data-cat');
-      let selectedImage = buildSelectedImage(index, cat);
-      $('.overlay').show().append(selectedImage);
-      addArrows(selectedImage, index, cat);
+      $('.overlay').show();
+      getNewImage(+index, cat);
     });
 
     $('body').on('click', '.overlay', function(){
       $('.overlay').html('').hide();
-
     })
 
   </script>
