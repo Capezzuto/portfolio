@@ -4,8 +4,9 @@
   "description": "Portfolio site for Joseph Capezzuto",
   "main": "index.js",
   "scripts": {
+    "dev-start": "NODE_ENV=development node server.js",
     "build": "webpack -p",
-    "prod-start": "npm run build && node server.js"
+    "prod-start": "npm run build && NODE_ENV=production node server.js"
   },
   "keywords": [
     "riot.js",
@@ -40,6 +41,7 @@
     "express": "^4.14.0",
     "jquery": "^3.1.1",
     "moment": "^2.17.1",
+    "mongoose": "^4.7.4",
     "request": "^2.79.0",
     "riot": "^2.6.2"
   }

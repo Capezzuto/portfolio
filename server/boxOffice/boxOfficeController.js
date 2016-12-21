@@ -18,7 +18,7 @@ module.exports = {
           days.push(dailyData[key]);
         }
       }
-      
+
       days.sort((a, b) => {
         if (a.date < b.date) return -1;
         if (a.date > b.date) return 1;

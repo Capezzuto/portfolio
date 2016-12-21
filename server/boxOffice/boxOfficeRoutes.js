@@ -1,4 +1,4 @@
-const controllers = require('../controllers/boxOfficeCtrl.js');
+const controllers = require('./boxOfficeController.js');
 const router = require('express').Router();
 
 for(const route in controllers) {

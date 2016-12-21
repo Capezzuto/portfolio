@@ -24,11 +24,11 @@
 
   </style>
   <div class="container">
-    <h2>Top 5 Movies at the Box Office, week of November 4 - 10</h2>
+    <h2>U.S. Box Office, Top Five Movies for the Week of November 4 - 10</h2>
   </div>
 
-  <div>
-    <p>Ongoing project to build data visualizations with d3.js</p>
+  <div class="footnotes">
+    <p>Part of an ongoing project to build data visualizations with D3.js. <span class="small">Source: Box Office Mojo</span></p>
   </div>
 
   <script>
@@ -40,7 +40,7 @@
     const parseTime = d3.timeParse('%Y-%m-%d');
     const getDay = d3.timeFormat('%a');
 
-    const svg = d3.select('.container').append('svg').attr('height', 700).attr('width', '100%');
+    const svg = d3.select('.container').append('svg').attr('height', '60vh').attr('width', '100%');
     const tooltip = d3.select('.container').append('div').attr('id', 'tooltip').style('opacity', 0).style('position', 'absolute');
 
     const height = 400;
@@ -109,6 +109,7 @@
 
         let chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
         let legend = svg.append('g').attr('transform', 'translate(735, 0)').attr('id', 'legend');
+        let pieChartGroup = svg.append('g').attr('transform', 'translate(760, 0)').attr('id', 'pie-chart');
 
         chartGroup.append('g')
                   .attr('class', 'axis')
@@ -127,7 +128,7 @@
                         d3.select(this).attr('opacity', 1);
                         d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 1);
                         // console.log(d.index);
-                        tooltip.style('left', `${300}px`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
+                        tooltip.style('left', `${33}vw`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
                           <h5>Weekly Total:</h5><p>$${data.weekTotals[d.index + 1].week_gross.toLocaleString()}</p>`);
 
                       })
@@ -150,7 +151,7 @@
                                     .on('mouseover', function(d, i) {
                                       d3.select(this).attr('opacity', 1);
                                       d3.selectAll(`.area:nth-child(${i+3})`).attr('opacity', 1);
-                                      tooltip.style('left', `${300}px`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
+                                      tooltip.style('left', `${33}vw`).style('top', `${y(d[2][1]) + 30}px`).style('opacity', 1).html(`<h4>${d.key}</h4>
                                         <h5>Weekly Total:</h5><p>$${data.weekTotals[d.index + 1].week_gross.toLocaleString()}</p>`);
                                     })
                                     .on('mouseout', function(d, i) {

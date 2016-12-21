@@ -1,18 +1,41 @@
-var express = require('express');
-var path = require('path');
-var app = express();
-var bodyParser = require('body-parser');
-var boxOfficeRoutes = require('./server/routes/boxOfficeRoutes')
+const express = require('express');
+const app = express();
+const path = require('path');
+const mongoose = require('mongoose');
+const config = require('./server/config/config.js');
+const boxOfficeRoutes = require('./server/boxOffice/boxOfficeRoutes');
+const PORT = config.port;
 
-var PORT = 3000;
+let db;
+mongoose.connect(config.db, (err, database) => {
+  db = database;
+  console.log(`connected to db at ${config.db}`);
+//   const testSchema = mongoose.Schema({
+//     testName: String,
+//     testDate: Date
+//   });
+// //the _model_ name is the name of the *collection*, made lowercase and pluralized
+//   let TestEntry = mongoose.model('TestEntry', testSchema);
+//   TestEntry.create({
+//     testName: 'test1',
+//     testDate: Date.now()
+//   }, function(err, doc) {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       console.log(doc);
+//     }
+//   })
+});
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+require('./server/middleware')(app);
 
 app.use('/', express.static(__dirname + '/src'));
 app.use('/dist',express.static(__dirname + '/dist'));
 
 app.use('/data/boxoffice/', boxOfficeRoutes)
+
+
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
