@@ -1,14 +1,15 @@
+require('dotenv').config();
+const config = require('../config/config.js');
 const cheerio = require('cheerio');
 const request = require('request');
-// const moment = require('moment');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 const BoxOfficeWeekly = require('../boxOffice/boxOfficeWeeklyModel.js');
 const BoxOfficeDaily = require('../boxOffice/boxOfficeDailyModel.js');
 
 const args = process.argv.slice(2);
-
-mongoose.connect('mongodb://localhost/localdb');
+// console.log('process.env.db_user =', config.user);
+mongoose.connect(config.db);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error opening connection'));
 db.on('open', () => {
@@ -47,7 +48,7 @@ module.exports = {
                       }).get();
 
       let week = `${arg.year}_${arg.week}`;
-      console.log(`weeeeeeeeeeeeek is ${week}`);
+      let date_range = $('#body').find('h2').eq(1).text();
 
       let total_gross = $('#body')
                           .find('tr')
@@ -74,16 +75,12 @@ module.exports = {
         11: function(obj, curr, entry) { obj.movies[entry]['week'] = Number(curr) || 1; },
       }
 
-      // console.log(`weeklyData is ${weeklyData}`)
-
       let jsonData = weeklyData.reduce((obj, curr, i) => {
         let x = i % 12;
         let entry = Math.floor(i/12);
         reducerFuncs[x](obj, curr, entry);
         return obj;
-      }, { week, total_gross, movies: [] });
-
-      // console.log(`******* ---------> ${jsonData.movies[2].week}`);
+      }, { week, date_range, total_gross, movies: [] });
 
       BoxOfficeWeekly.create(jsonData)
         .then((output) => {
