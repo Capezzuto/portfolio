@@ -14,10 +14,10 @@ let date = yesterday.format('YYYY-MM-DD');
 if (yearStartDay < 5) week = yest.subtract(4, 'days').isoWeek();
 if (yearStartDay === 5) week = yest.add(3, 'days').isoWeek();
 
+//run daily scraper
+scraper.getDailyData({ date, week });
+
 //run weekly scraper
 if (yesterday.isoWeekday() === 4) {
   scraper.getWeeklyData({ year, week });
 }
-
-//run daily scraper
-scraper.getDailyData({ date, week });

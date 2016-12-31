@@ -1,13 +1,23 @@
-const weeklyData = require('../scraper/weekly-data.json');
-const dailyData = require('../scraper/daily-data.json');
+// const weeklyData = require('../scraper/weekly-data.json');
+// const dailyData = require('../scraper/daily-data.json');
+const DailyBoxOffice = require('./boxOfficeDailyModel.js');
+const WeeklyBoxOffice = require('./boxOfficeWeeklyModel.js');
+
 const url = require('url');
 
 module.exports = {
+  '/weekly': {
+    //should get all available weeks in array to populate selection menu
+  },
+  // the :week query string should be in the format: 'yyyy_ww'
   '/weekly/:week': {
     get(req, res) {
       const week = url.parse(req.url, true).path.slice(8);
       const year = week.slice(0, 4);
 
+      WeeklyBoxOffice.findOne({ week: week }).then((data)=> {
+
+      })
       if (!(week in weeklyData)) res.status(404).send('Unable to retrieve data')
 
       const weekTotals = weeklyData[week];

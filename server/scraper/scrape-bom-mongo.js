@@ -8,22 +8,25 @@ const BoxOfficeWeekly = require('../boxOffice/boxOfficeWeeklyModel.js');
 const BoxOfficeDaily = require('../boxOffice/boxOfficeDailyModel.js');
 
 const args = process.argv.slice(2);
-// console.log('process.env.db_user =', config.user);
+
 mongoose.connect(config.db);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error opening connection'));
 db.on('open', () => {
+
   /*************************************************************************************
   ** process.argv's first argument (args[0]) should be a string: 'week' or 'day'      **
   ** process.argv's second argument (args[1]) should be the year or date (yyyy-mm-dd) **
   ** process.argv's third argument (args[2]) should be the week                       **
   *************************************************************************************/
+
   if (args[0] === 'week') {
     module.exports.getWeeklyData({ year: args[1], week: args[2] });
   }
   if (args[0] === 'day') {
     module.exports.getDailyData({ date: args[1], week: args[2] });
   }
+
 })
 
 module.exports = {
@@ -80,12 +83,22 @@ module.exports = {
         let entry = Math.floor(i/12);
         reducerFuncs[x](obj, curr, entry);
         return obj;
-      }, { week, date_range, total_gross, movies: [] });
+      }, { week, date_range, total_gross, movies: [], days: [] });
 
       BoxOfficeWeekly.create(jsonData)
         .then((output) => {
-          console.log('created...', output);
-          mongoose.disconnect();
+          BoxOfficeDaily
+            .find({ week: arg.week })
+            .select('_id')
+            .exec((err, days) => {
+              if (err)  return err;
+              output.days = days;
+              output.save((err, updatedDoc) => {
+                if (err) return err;
+                console.log('----------------->', updatedDoc);
+                mongoose.disconnect();
+              })
+            });
         })
         .catch((err) => {
           console.log('error', err);
@@ -93,10 +106,9 @@ module.exports = {
         });
     });
 
-
   },
   getDailyData: function(arg) {
-    console.log('in getDailyData...');
+    // console.log('in getDailyData...');
     let dailyData;
     request(`http://www.boxofficemojo.com/daily/chart/?sortdate=${arg.date}&view=1day&p=.htm`,
       (error, response, body) => {
