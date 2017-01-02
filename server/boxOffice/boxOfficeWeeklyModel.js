@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const weeklyBoxSchema = mongoose.Schema({
   week: String,
+  date_range: String,
   days: [{type: mongoose.Schema.Types.ObjectId, ref: 'boxoffice_daily'}],
   movies: [{
     rank: Number,

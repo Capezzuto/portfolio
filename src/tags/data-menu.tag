@@ -46,15 +46,6 @@
     const height = 400;
     const width = 700;
     const margin = { left: 80, right: 20, top: 20, bottom: 0 };
-    // const colorScheme = [
-    //   'rgb(0, 154, 212)',
-    //   'rgb(236, 0, 140)',
-    //   'rgb(240, 230, 0)',
-    //   'rgb(70, 205, 255)',
-    //   'rgb(250, 70, 170)',
-    //   'rgb(0, 174, 239)',
-    //   'rgb(255, 242, 0)'
-    // ];
     const colorScheme1 = [
       'rgb(0, 154, 212)',
       'rgb(236, 0, 140)',

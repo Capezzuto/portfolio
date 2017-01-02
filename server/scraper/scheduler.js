@@ -15,6 +15,8 @@ if (yearStartDay < 5) week = yest.subtract(4, 'days').isoWeek();
 if (yearStartDay === 5) week = yest.add(3, 'days').isoWeek();
 
 //run daily scraper
+// console.log(`date = ${date} & typeof date = ${typeof date}`);
+// console.log(`week = ${week} & typeof week = ${typeof week}`);
 scraper.getDailyData({ date, week });
 
 //run weekly scraper
