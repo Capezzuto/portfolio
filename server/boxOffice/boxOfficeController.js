@@ -9,7 +9,18 @@ module.exports = {
   '/weekly': {
     //should get all available weeks in array to populate selection menu
     get(req, res) {
-      res.status(200).end('weekly');
+      WeeklyBoxOffice
+        .find()
+        .select('week date_range')
+        .limit(52)
+        .exec((err, weeks) => {
+          if (err) {
+            console.log('error in data/boxoffice/weekly...', err);
+            res.status(500).send(err);
+          }
+          res.status(200).send(weeks);
+        })
+
     }
   },
   // the :week query string should be in the format: 'yyyy_ww'
