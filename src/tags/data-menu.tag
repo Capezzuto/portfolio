@@ -35,8 +35,7 @@
     const d3 = require('d3');
     const axios = require('axios');
 
-    // const parseTime = d3.timeParse('%Y-%m-%d');
-    const strictIsoParse = d3.utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
+    const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
     const getDay = d3.timeFormat('%a');
 
     const svg = d3.select('.container').append('svg').attr('height', '60vh').attr('width', '100%');
@@ -67,9 +66,8 @@
         const stack = d3.stack().keys(top5);
 
         const top5Data = data.days.map((day) => {
-          console.log(typeof day.date);
           return {
-            date: strictIsoParse(day.date),
+            date: parseTime(day.date),
             [top5[0]]: day.top10.find((movie) => movie.title === top5[0]).daily_gross || 0,
             [top5[1]]: day.top10.find((movie) => movie.title === top5[1]).daily_gross || 0,
             [top5[2]]: day.top10.find((movie) => movie.title === top5[2]).daily_gross || 0,
@@ -78,6 +76,7 @@
           };
         });
 
+        console.log(top5Data);
         const x = d3.scaleTime()
                     .domain(d3.extent(top5Data, (d) => d.date))
                     .range([0, width]);
@@ -161,7 +160,7 @@
                     .attr('fill', (d, i) => colorScheme[i])
                     .attr('text-anchor', 'end')
                     .text(d => d.key);
-                    
+
       })
       .catch((err) => {
         console.log(err);
