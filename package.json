@@ -6,7 +6,8 @@
   "scripts": {
     "dev-start": "NODE_ENV=development nodemon server.js",
     "build": "webpack -p",
-    "prod-start": "npm run build && NODE_ENV=production node server.js"
+    "prod-start": "npm run build && NODE_ENV=production node server.js",
+    "scrape": "NODE_ENV=production node server/scraper/scrape-bom-mongo.js"
   },
   "keywords": [
     "riot.js",

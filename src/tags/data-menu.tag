@@ -38,12 +38,13 @@
     const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
     const getDay = d3.timeFormat('%a');
 
-    const svg = d3.select('.container').append('svg').attr('height', '60vh').attr('width', '100%');
+    const margin = { left: 80, right: 20, top: 20, bottom: 0 };
+    let height = 500 - margin.top;
+    let width = 960 - margin.right - margin.left;
+
+    const svg = d3.select('.container').append('svg').attr('height', height + margin.top * 2).attr('width', width + (margin.right + margin.left) * 2);
     const tooltip = d3.select('.container').append('div').attr('id', 'tooltip').style('opacity', 0).style('position', 'absolute');
 
-    const height = 400;
-    const width = 700;
-    const margin = { left: 80, right: 20, top: 20, bottom: 0 };
     const colorScheme = [
       'rgb(0, 154, 212)',
       'rgb(236, 0, 140)',
@@ -76,7 +77,6 @@
           };
         });
 
-        console.log(top5Data);
         const x = d3.scaleTime()
                     .domain(d3.extent(top5Data, (d) => d.date))
                     .range([0, width]);
@@ -95,7 +95,7 @@
                         .y1((d) => y(d[1]));
 
         let chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
-        let legend = svg.append('g').attr('transform', 'translate(735, 0)').attr('id', 'legend');
+        let legend = svg.append('g').attr('transform', `translate(${width + 35}, 0)`).attr('id', 'legend');
         let pieChartGroup = svg.append('g').attr('transform', 'translate(760, 0)').attr('id', 'pie-chart');
 
         chartGroup.append('g')
@@ -125,10 +125,7 @@
                     .append('path')
                       .transition().duration(1000).ease(d3.easeLinear)
                       .attr('fill', (d, i) => colorScheme[i])
-                      .attr('d', (d) => {
-                        console.log('d in this case is...', d);
-                        return area(d)
-                      })
+                      .attr('d', (d) => area(d))
 
         let legendEntry = legend.selectAll('g.legend-entry')
                                   .data(stacked)
@@ -164,7 +161,13 @@
       })
       .catch((err) => {
         console.log(err);
-      })
+      });
+
+    function resize() {
+      console.log('resize');
+    }
+
+    d3.select(window).on('resize', resize);
 
   })
   </script>
