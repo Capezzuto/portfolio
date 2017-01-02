@@ -30,6 +30,7 @@ module.exports = {
 
       WeeklyBoxOffice
         .findOne({ week: week })
+        .select('-movies.studio -movies.budget -movies.week -movies.prev_rank')
         .populate({
           path: 'days',
           select: 'date top10.title top10.daily_gross top10.theaters top10.avg',
