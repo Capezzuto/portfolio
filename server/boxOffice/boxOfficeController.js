@@ -29,19 +29,19 @@ module.exports = {
       const week = url.parse(req.url, true).path.slice(8);
 
       WeeklyBoxOffice
-        .findOne({ week: week })
+        .find({ week: week })
         .select('-movies.studio -movies.budget -movies.week -movies.prev_rank')
         .populate({
           path: 'days',
           select: 'date top10.title top10.daily_gross top10.theaters top10.avg',
           options: { sort: { date: 1 } }
         })
-        .exec((err, week) => {
+        .exec((err, data) => {
           if (err) {
             res.status(500).send(err);
           }
-          console.log('sending week...', week)
-          res.status(200).send(week);
+          // console.log('sending week...', data)
+          res.status(200).send(data[0]);
         })
 
     }
