@@ -37,6 +37,9 @@ module.exports = {
           options: { sort: { date: 1 } }
         })
         .exec((err, week) => {
+          if (err) {
+            res.status(500).send(err);
+          }
           console.log('sending week...', week)
           res.status(200).send(week);
         })
@@ -46,9 +49,9 @@ module.exports = {
   '/daily/:date': {
     get(req, res) {
       const date = url.parse(req.url, true).path.slice(7);
-      if (!(date in dailyData)) res.status(404).send('Unable to retrieve data');
-      const data = dailyData[date];
-      res.status(200).send(data);
+      // if (!(date in dailyData)) res.status(404).send('Unable to retrieve data');
+      // const data = dailyData[date];
+      res.status(200).send(date);
     }
   }
 }
