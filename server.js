@@ -36,5 +36,5 @@ app.use('/data/boxoffice/', boxOfficeRoutes)
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
-  if (config.env === 'production') process.send('ready');
+  // if (config.env === 'production') process.send('ready');
 })

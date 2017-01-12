@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dailyBoxSchema = mongoose.Schema({
   date: Date,
-  week: Number,
+  week: String,
   top10: [{
     rank_today: Number,
     rank_yesterday: Number,
