@@ -5,7 +5,7 @@
       <div class="site-entry">
         <h1>{opts.title}</h1>
         <p>{opts.summary}</p>
-        <p>Technologies: {opts.tech}</p>
+        <p class='tech'>Technologies: {opts.tech}</p>
       </div>
     </a>
   </div>

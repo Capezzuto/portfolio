@@ -21,25 +21,34 @@ site-card {
   @media screen and (max-width: 768px) {
     height: 70vh;
   }
-  // @media screen and (max-width: 600px) {
-  //   width: 400px;
-  //   height: 225px;
-  // }
-  // @media screen and (max-width: 480px) {
-  //   width: 300px;
-  //   height: 167px;
-  // }
 }
 
 .site-entry {
   position: absolute;
-  bottom: 80px;
-  left: 10px;
-  box-sizing: border-box;
-  width: 300px;
-  opacity: 1;
-  background-color: rgba(0,0,0,0.7);
-  color: #FFF200;
-  padding: 10px;
-  border-radius: 15px;
+    bottom: 50px;
+    left: -5px;
+    box-sizing: border-box;
+    width: 330px;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: $lighterMagenta;
+    padding: 10px 15px;
+    border-radius: 0 10px 10px 0;
+    border: 2px solid rgba(0,0,0,0);
+  h1 {
+    margin: 0.3em 0.5em;
+    text-align: right;
+  }
+  p {
+    color: $cyan;
+    font-size: 1.1em;
+  }
+  .tech {
+    color: $yellow;
+    font-size: 0.8em;
+  }
+  &:hover {
+    border: 2px solid $magenta;
+    background-color: rgba(0,0,0,0.8);
+  }
 }
