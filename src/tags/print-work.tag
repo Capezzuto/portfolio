@@ -243,14 +243,14 @@
       })
       $('#selectedImage').on('click', '.right-arrow', function(e) {
         e.stopPropagation();
-        $('.selectWrapper').css({ 'transform': 'translateX(80px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
+        $('.selectWrapper').css({ 'transform': 'translateX(-100px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
         setTimeout(() => {
           getNewImage(+index + 1, category)
         }, 300);
       });
       $('#selectedImage').on('click', '.left-arrow', function(e) {
         e.stopPropagation();
-        $('.selectWrapper').css({ 'transform': 'translateX(-80px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
+        $('.selectWrapper').css({ 'transform': 'translateX(100px)', 'opacity': 0, 'transition': 'transform 300ms, opacity 150ms'});
         setTimeout(() => {
           getNewImage(index - 1, category)
         }, 300);
