@@ -1,8 +1,10 @@
 <reach>
   <div class="background background-magenta"></div>
 
-  <div class="reach-container">
+  <div class="page-header">
     <h2>How to reach me</h2>
+  </div>
+  <div class="reach-container">
     <div>
       <div class="revealer phone"><div>phone:</div></div>
     </div>

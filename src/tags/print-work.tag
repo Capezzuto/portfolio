@@ -1,8 +1,8 @@
 <print-work>
   <div class="background background-magenta"></div>
   <div class="overlay"></div>
+  <div class="page-header"><h2>Product Design and Advertising</h2></div>
   <div class="container">
-    <div><h2>Product Design and Advertising</h2></div>
     <div each={item, i in thumbs.products} class="print-entry">
       <img
         data-cat="products"

@@ -6,7 +6,7 @@
   display: inline-block;
   width: 95%;
   margin: 0 auto;
-  padding: 1.3rem;
+  padding: 0;
 
   h2, h3, h4, h5 {
     text-align: left;
@@ -19,12 +19,12 @@
 
   h3 {
     margin-left: 1rem;
-    color: $cyan;
+    color: $magenta;
   }
 }
 
 .subsection {
-  margin-top: 4rem;
+  margin-top: 3.5rem;
 }
 
 .block {

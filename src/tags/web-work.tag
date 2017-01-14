@@ -1,13 +1,16 @@
 <web-work>
   <div class="background background-cyan"></div>
+  <div class="page-header"><h2>Web Development</h2></div>
   <div class="jumbo-container">
-    <div><h2>Web Development</h2></div>
     <site-card
       each={site in sites}
       image={site.image}
       title={site.title}
       url={site.url}
-      summary={site.summary}></site-card>
+      summary={site.summary}
+      tech={site.tech.join(', ')}>
+    </site-card>
+    <div style="height: 70px"></div>
   </div>
 
   <script>
@@ -21,19 +24,22 @@
         image: '../assets/Shareat-full-screen-web.jpg',
         title: 'SharEat',
         url: 'http://www.shareat-us.com',
-        summary: 'Air BnB for home-cooked meals'
+        summary: 'Air BnB for home-cooked meals',
+        tech: ['React', 'Redux', 'Node.js','Express', 'Socket.io', 'Google Maps API', 'MySQL', 'Sequelize', 'Sass']
       },
       {
         image: '../assets/Toiletz-full-screen-web.jpg',
         title: 'Toiletz',
         url: 'http://ec2-54-204-215-124.compute-1.amazonaws.com:3000/',
-        summary: 'Toiletz is Yelp for public restrooms'
+        summary: 'Toiletz is Yelp for public restrooms',
+        tech: ['React', 'Redux', 'Node.js', 'Express', 'Google Maps API', 'MySQL', 'knex']
       },
       {
         image: '../assets/Pinwall-full-screen-web.jpg',
         title: 'PinWall',
         url: 'https://fathomless-ravine-28520.herokuapp.com',
-        summary: 'A virtual bulletin board for intra-organizational communication'
+        summary: 'A virtual bulletin board for intra-organizational communication',
+        tech: ['React', 'Redux', 'Node.js', 'Express', 'PostgreSQL']
       }
     ];
 

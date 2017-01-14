@@ -21,8 +21,9 @@
       margin-bottom: 5px;
     }
   </style>
+  <div class="page-header"><h2>Data Visualizations</h2></div>
   <div class="container">
-    <h2>U.S. Box Office, Top Five Movies for the Week of November 4 - 10</h2>
+    <h3>U.S. Box Office, Top Five Movies for the Week of November 4 - 10</h3>
   </div>
 
   <div class="footnotes">

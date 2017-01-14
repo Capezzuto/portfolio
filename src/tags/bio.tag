@@ -1,34 +1,35 @@
 <bio>
   <div class="background background-cyan"></div>
 
-  <div class="container" id="bio-container">
+  <div class="page-header"><h2>Bio</h2></div>
 
+  <div class="container" id="bio-container">
     <div class="section">
-      <h2>Bio</h2>
-      <div class="profile-pic">
-        <img src="/assets/square-profile-web-384.jpg" height="192px" width="192px">
-      </div>
-      <div id="bio">
-        <div class="block" >
-          <div class="deskew">
-            <p>
-              I have a background in art and design, but also love math and logic.  In 2012, after finishing a M.A. in art history at California State University, Long Beach, I worked as a freelance designer for a few clients, creating designs for print, ranging from business cards to tee-shirts.  This led to maintaining the a client’s web site, which led to new challenges and more opportunities to learn. I have continued to learn and grow since then through a combination of formal education and learning through projects.
-            </p>
-          </div>
-            <br>
-          <div class="deskew">
-            <p>
-              I like to find new solutions to old problems. I am always looking for a better user experience, improvements in performance and efficiency, and new and creative ways to present information. My current interests include data visualizations, build tools for web development, front-end Javascript frameworks, and motion graphics.
-            </p>
-          </div>
-        </div>
+      <h3>About Me</h3>
+      <div class="subsection">
+       <div class="profile-pic">
+         <img src="/assets/square-profile-web-384.jpg" height="192px" width="192px">
+       </div>
+       <div id="bio">
+         <div class="block" >
+           <div class="deskew">
+             <p>
+               I have a background in art and design, but also love math and logic.  In 2012, after finishing a M.A. in art history at California State University, Long Beach, I worked as a freelance designer for a few clients, creating designs for print, ranging from business cards to tee-shirts.  This led to maintaining the a client’s web site, which led to new challenges and more opportunities to learn. I have continued to learn and grow since then through a combination of formal education and learning through projects.
+             </p>
+           </div>
+             <br>
+           <div class="deskew">
+             <p>
+               I like to find new solutions to old problems. I am always looking for a better user experience, improvements in performance and efficiency, and new and creative ways to present information. My current interests include data visualizations, build tools for web development, front-end Javascript frameworks, and motion graphics.
+             </p>
+           </div>
+         </div>
+       </div>
       </div>
 
     </div>
 
     <div class="section">
-      <h2>C.V.</h2>
-
       <div class="subsection">
         <h3>Projects</h3>
         <div each={project in projects} class="block project">

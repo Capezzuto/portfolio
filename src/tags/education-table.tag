@@ -1,7 +1,7 @@
 <education>
   <table id="education">
     <tr>
-      <td>MakerSquare</td>
+      <td>Hack Reactor</td>
       <td>Advanced Immersive Software Engineering</td>
       <td>2016</td>
     </tr>
