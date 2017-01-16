@@ -1,29 +1,9 @@
 <data-menu>
   <div class="background background-yellow"></div>
-  <style>
-    #tooltip {
-      background-color: #000;
-      min-width: 100px;
-      min-height: 20px;
-      z-index: 40;
-      color: #FFF;
-      padding: 10px;
-      border-radius: 15px;
-    }
 
-    #tooltip h4 {
-      margin: 0;
-      margin-bottom: 10px;
-    }
-
-    #tooltip h5 {
-      margin: 0;
-      margin-bottom: 5px;
-    }
-  </style>
   <div class="page-header"><h2>Data Visualizations</h2></div>
   <div class="container">
-    <h3>U.S. Box Office, Top Five Movies for the Week of November 4-10, 2016</h3>
+    <h3>U.S. Box Office, Top Five Movies for the Week of {dateRange}</h3>
   </div>
 
   <div class="footnotes">
@@ -31,169 +11,186 @@
   </div>
 
   <script>
-  this.on('mount', function() {
+    this.dateRange = 'November 4-10, 2016' //eventually will be selected by user
+    this.on('mount', function() {
 
-  /* ---------------- declare preliminary variables ---------------------*/
-    const d3 = require('d3');
-    const axios = require('axios');
+    /* ---------------- declare preliminary variables ---------------------*/
+      const d3 = require('d3');
+      const axios = require('axios');
 
-    const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
-    const getDay = d3.timeFormat('%a');
+      const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
+      const getDay = d3.timeFormat('%a');
 
-    const margin = { left: 80, right: 20, top: 20, bottom: 20 };
-    let height = 500 - margin.top - margin.bottom;
-    let width = 960 - margin.right - margin.left;
+      const margin = { left: 50, right: 30, top: 20, bottom: 20 };
+      let height = 500 - margin.top - margin.bottom;
+      let width = 960 - margin.right - margin.left;
 
-    let fullWidth = width + margin.right + margin.left;
-    let fullHeight = height + margin.top + margin.bottom;
+      let fullWidth = width + margin.right + margin.left;
+      let fullHeight = height + margin.top + margin.bottom;
 
-    const svg = d3.select('.container')
-                  .append('svg')
-                    .attr('height', fullHeight)
-                    .attr('width', fullWidth);
+      const svg = d3.select('.container')
+                    .append('svg')
+                      .attr('height', fullHeight)
+                      .attr('width', fullWidth)
+                      .call(responsivefy);
 
-    const tooltip = d3.select('.container')
-                      .append('div')
-                        .attr('id', 'tooltip')
-                        .style('opacity', 0)
-                        .style('position', 'absolute');
+      const tooltip = d3.select('.container')
+                        .append('div')
+                          .attr('id', 'tooltip')
+                          .style('opacity', 0)
+                          .style('position', 'absolute');
 
-    const colorScheme = [
-      'rgb(0, 154, 212)',
-      'rgb(236, 0, 140)',
-      'rgb(240, 230, 0)',
-      'rgb(170, 205, 255)',
-      'rgb(250, 170, 170)',
-      'rgb(60, 174, 239)',
-      'rgb(255, 242, 0)'
-    ];
+      const colorScheme = [
+        'rgb(0, 154, 212)',
+        'rgb(236, 0, 140)',
+        'rgb(240, 230, 0)',
+        'rgb(170, 205, 255)',
+        'rgb(250, 170, 170)',
+        'rgb(60, 174, 239)',
+        'rgb(255, 242, 0)'
+      ];
 
-    const chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
-    const legend = svg.append('g').attr('transform', `translate(${width + 35}, 0)`).attr('id', 'legend');
-    // const pieChartGroup = svg.append('g').attr('transform', 'translate(760, 0)').attr('id', 'pie-chart');
+      const chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+      const legend = svg.append('g').attr('transform', `translate(${width + 35}, 0)`).attr('id', 'legend');
+      // const pieChartGroup = svg.append('g').attr('transform', 'translate(760, 0)').attr('id', 'pie-chart');
 
-    let selectedWeek = '2016_46';
-    let dateRange = 'November 4-10, 2016' //eventually will be selected by user
+      let selectedWeek = '2016_45';
 
-    axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
-      .then((response) => {
-        const data = response.data;
-        console.log(data);
-        // let dateRange = 'November 4-10, 2016';
 
-/* ----------------------------- clean data ----------------------------- */
-        let top5 = [];
-        for (let i = 0; i < 5; i++) {
-          let title = data.movies[i].title;
-          top5.push(
-            {
-              title: title,
-              rank: data.movies[i].rank,
-              values: data.days.map(day => {
-                return {
-                  date: parseTime(day.date),
-                  gross: day.top10.find(movie => movie.title === title).daily_gross || 0
-                 }
-               })
-            }
-          );
-        }
+      axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
+        .then((response) => {
+          const data = response.data;
+          console.log(data);
+          // let dateRange = 'November 4-10, 2016';
 
-        console.log(top5);
-/* ------------------------------ axis data ------------------------------ */
-        const xScale = d3.scaleTime()
-                    .domain([
-                      d3.min(data.days, day => parseTime(day.date)),
-                      d3.max(data.days, day => parseTime(day.date))
-                    ])
-                    .range([0, width]);
+  /* ----------------------------- clean data ----------------------------- */
+          let top5 = [];
+          for (let i = 0; i < 5; i++) {
+            let title = data.movies[i].title;
+            top5.push(
+              {
+                title: title,
+                rank: data.movies[i].rank,
+                values: data.days.map(day => {
+                  return {
+                    date: parseTime(day.date),
+                    gross: day.top10.find(movie => movie.title === title).daily_gross || 0
+                   }
+                 })
+              }
+            );
+          }
 
-        const xAxis = d3.axisBottom(xScale).ticks(7);
+          // console.log(top5);
+  /* ------------------------------ axis data ------------------------------ */
+          const xScale = d3.scaleTime()
+                      .domain([
+                        d3.min(data.days, day => parseTime(day.date)),
+                        d3.max(data.days, day => parseTime(day.date))
+                      ])
+                      .range([0, width]);
 
-        const yScale = d3.scaleLinear()
-                    .domain([0, d3.max(data.days, day => day.top10[0].daily_gross)])
-                    .range([height, 0]);
+          const xAxis = d3.axisBottom(xScale).ticks(7);
 
-        const yAxis = d3.axisLeft(yScale).tickFormat(d3.format('$,.0f'));
+          const yScale = d3.scaleLinear()
+                      .domain([0, d3.max(data.days, day => day.top10[0].daily_gross)])
+                      .range([height, 0]);
 
-        chartGroup.append('g')
-                    .attr('class', 'axis')
-                    .attr('transform', `translate(0, ${height})`)
-                    .call(xAxis);
-        chartGroup.append('g')
-                    .attr('class', 'axis')
-                    .call(yAxis);
+          const yAxis = d3.axisLeft(yScale).tickFormat(d3.format('$,.2s'));
 
-/* ------------------------------ area data ------------------------------ */
-        let area = d3.area()
-                        .x((d, i) => xScale(d.date))
-                        .y0(yScale(0))
-                        .y1(d => yScale(d.gross));
+          chartGroup.append('g')
+                      .attr('class', 'axis')
+                      .attr('transform', `translate(0, ${height})`)
+                      .call(xAxis);
+          chartGroup.append('g')
+                      .attr('class', 'axis')
+                      .call(yAxis);
 
-        chartGroup.selectAll('.area')
-                    .data(top5)
-                    .enter().append('path')
-                      .attr('class', 'area')
-                      .attr('d', d => area(d.values))
-                      .attr('fill-opacity', d => { console.log(d); return 0.05; })
+  /* ------------------------------ area data ------------------------------ */
+          let area = d3.area()
+                          .x((d, i) => xScale(d.date))
+                          .y0(yScale(0))
+                          .y1(d => yScale(d.gross));
+
+          chartGroup.selectAll('.area')
+                      .data(top5)
+                      .enter().append('path')
+                        .attr('class', 'area')
+                        .attr('d', d => area(d.values))
+                        .attr('fill-opacity', d => { console.log(d); return 0.05; })
+                        .attr('fill', (d, i) => colorScheme[i])
+                        .attr('stroke', (d, i) => colorScheme[i])
+                        .on('mouseover', function(d, i) {
+                          d3.select(this).attr('fill-opacity', 1);
+                          d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 1);
+                          tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 70}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
+                            <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
+                        })
+                        .on('mouseout', function(d, i) {
+                          d3.select(this).attr('fill-opacity', 0.05);
+                          d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 0.5);
+                          tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                        });
+
+  /* ---------------------------- legend data ---------------------------- */
+
+          let legendEntry = legend.selectAll('g.legend-entry')
+                                    .data(top5)
+                                    .enter().append('g')
+                                      .attr('class', 'legend-entry')
+                                      .attr('opacity', 0.5)
+                                      .on('mouseover', function(d, i) {
+                                        d3.select(this).attr('opacity', 1);
+                                        d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 1);
+                                        tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 100}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
+                                          <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
+                                      })
+                                      .on('mouseout', function(d, i) {
+                                        d3.select(this).attr('opacity', 0.5);
+                                        d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 0.05);
+                                        tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                                      });
+
+          legendEntry.append('rect')
                       .attr('fill', (d, i) => colorScheme[i])
-                      .attr('stroke', (d, i) => colorScheme[i])
-                      .on('mouseover', function(d, i) {
-                        d3.select(this).attr('fill-opacity', 1);
-                        d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 1);
-                        tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 70}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
-                          <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
-                      })
-                      .on('mouseout', function(d, i) {
-                        d3.select(this).attr('fill-opacity', 0.05);
-                        d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 0.5);
-                        tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
-                      });
+                      .attr('width', 30)
+                      .attr('height', 30)
+                      .attr('x', 15)
+                      .attr('y', (d, i) => i * 50);
 
-/* ---------------------------- legend data ---------------------------- */
+          legendEntry.append('text')
+                      .attr('x', 0)
+                      .attr('y', (d, i) => i * 50 + 20)
+                      .attr('fill', (d, i) => colorScheme[i])
+                      .attr('text-anchor', 'end')
+                      .text(d => d.title);
 
-        let legendEntry = legend.selectAll('g.legend-entry')
-                                  .data(top5)
-                                  .enter().append('g')
-                                    .attr('class', 'legend-entry')
-                                    .attr('opacity', 0.5)
-                                    .on('mouseover', function(d, i) {
-                                      d3.select(this).attr('opacity', 1);
-                                      d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 1);
-                                      tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 100}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
-                                        <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
-                                    })
-                                    .on('mouseout', function(d, i) {
-                                      d3.select(this).attr('opacity', 0.5);
-                                      d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 0.05);
-                                      tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
-                                    });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-        legendEntry.append('rect')
-                    .attr('fill', (d, i) => colorScheme[i])
-                    .attr('width', 30)
-                    .attr('height', 30)
-                    .attr('x', 15)
-                    .attr('y', (d, i) => i * 50);
+  /* ---------- responsivefy originally written by Brendan Sudol ---------- */
+  /* ---------  http://www.brendansudol.com/writing/responsive-d3 ---------  */
+      function responsivefy(svg) {
+        let container = d3.select(svg.node().parentNode);
+        let width = parseInt(svg.style('width'));
+        let height = parseInt(svg.style('height'));
+        const aspect = width / height;
 
-        legendEntry.append('text')
-                    .attr('x', 0)
-                    .attr('y', (d, i) => i * 50 + 20)
-                    .attr('fill', (d, i) => colorScheme[i])
-                    .attr('text-anchor', 'end')
-                    .text(d => d.title);
+        svg.attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('preserveAspectRatio', 'xMinYMid')
+            .call(resize);
 
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        d3.select(window).on(`resize.${container.attr('id')}`, resize);
 
-    function resize() {
-      console.log('resize');
-    }
+        function resize() {
+          let targetWidth = parseInt(container.style('width'));
+          svg.attr('width', targetWidth)
+          svg.attr('height', Math.round(targetWidth / aspect));
+        }
+      }
 
-    d3.select(window).on('resize', resize);
-
-  })
+    });
   </script>
 </data-menu>
