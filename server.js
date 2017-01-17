@@ -8,7 +8,7 @@ const config = require('./server/config/config.js');
 const boxOfficeRoutes = require('./server/boxOffice/boxOfficeRoutes.js');
 const PORT = config.port;
 
-var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+const options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
 
 let db;
