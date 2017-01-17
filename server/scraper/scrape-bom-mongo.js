@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env' || '/home/capezzuto/portfolio/.env' });
+require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env'});
 const config = require('../config/config.js');
 const cheerio = require('cheerio');
 const request = require('request');
