@@ -21,12 +21,21 @@
       const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
       const getDay = d3.timeFormat('%a');
 
+      const tIn = d3.transition().duration(250);
+      const tOut = d3.transition().duration(100);
+
       const margin = { left: 50, right: 30, top: 20, bottom: 20 };
-      let height = 500 - margin.top - margin.bottom;
-      let width = 960 - margin.right - margin.left;
+      let height = 500 - margin.top - margin.bottom; // temporary
+      let width = 960 - margin.right - margin.left; // temporary
+      let areaHeight = 500 - margin.top - margin.bottom;
+      let areaWidth = 960 - margin.right - margin.left;
+      let pieHeight = 300 - margin.top - margin.bottom;
+      let pieWidth = 300 - margin.right - margin.left;
+      let barHeight = 300 - margin.top - margin.bottom;
+      let barWidth = 960 - margin.right - margin.left;
 
       let fullWidth = width + margin.right + margin.left;
-      let fullHeight = height + margin.top + margin.bottom;
+      let fullHeight = areaHeight + pieHeight + barHeight + 3 * (margin.top + margin.bottom);
 
       const svg = d3.select('.container')
                     .append('svg')
@@ -50,9 +59,24 @@
         'rgb(255, 242, 0)'
       ];
 
-      const chartGroup = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
-      const legend = svg.append('g').attr('transform', `translate(${width + 35}, 0)`).attr('id', 'legend');
-      // const pieChartGroup = svg.append('g').attr('transform', 'translate(760, 0)').attr('id', 'pie-chart');
+      const areaChartGroup = svg
+                              .append('g')
+                              .attr('id', 'area-chart')
+                              .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      const legend = svg
+                      .append('g')
+                      .attr('id', 'legend')
+                      .attr('transform', `translate(${width + 35}, 0)`);
+
+      const pieChartGroup = svg
+                              .append('g')
+                              .attr('id', 'pie-chart')
+                              .attr('transform', `translate(0, ${areaHeight + margin.top + margin.bottom})`);
+
+      const barChartGroup = svg
+                              .append('g')
+                              .attr('id', 'bar-chart')
+                              .attr('transform', `translate(0, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
 
       let selectedWeek = '2016_45';
 
@@ -60,7 +84,7 @@
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
         .then((response) => {
           const data = response.data;
-          console.log(data);
+          // console.log(data);
           // let dateRange = 'November 4-10, 2016';
 
   /* ----------------------------- clean data ----------------------------- */
@@ -83,72 +107,114 @@
 
           // console.log(top5);
   /* ------------------------------ axis data ------------------------------ */
-          const xScale = d3.scaleTime()
+          const areaXScale = d3.scaleTime()
                       .domain([
                         d3.min(data.days, day => parseTime(day.date)),
                         d3.max(data.days, day => parseTime(day.date))
                       ])
                       .range([0, width]);
 
-          const xAxis = d3.axisBottom(xScale).ticks(7);
+          const areaXAxis = d3.axisBottom(areaXScale).ticks(7);
 
-          const yScale = d3.scaleLinear()
+          const areaYScale = d3.scaleLinear()
                       .domain([0, d3.max(data.days, day => day.top10[0].daily_gross)])
-                      .range([height, 0]);
+                      .range([areaHeight, 0]);
 
-          const yAxis = d3.axisLeft(yScale).tickFormat(d3.format('$,.2s'));
+          const areaYAxis = d3.axisLeft(areaYScale).tickFormat(d3.format('$,.2s'));
 
-          chartGroup.append('g')
+          areaChartGroup.append('g')
                       .attr('class', 'axis')
                       .attr('transform', `translate(0, ${height})`)
-                      .call(xAxis);
-          chartGroup.append('g')
+                      .call(areaXAxis);
+          areaChartGroup.append('g')
                       .attr('class', 'axis')
-                      .call(yAxis);
+                      .call(areaYAxis);
 
   /* ------------------------------ area data ------------------------------ */
-          let area = d3.area()
-                          .x((d, i) => xScale(d.date))
-                          .y0(yScale(0))
-                          .y1(d => yScale(d.gross));
+          const area = d3.area()
+                          .x((d, i) => areaXScale(d.date))
+                          .y0(areaYScale(0))
+                          .y1(d => areaYScale(d.gross));
 
-          chartGroup.selectAll('.area')
-                      .data(top5)
-                      .enter().append('path')
+          let areaUpdate = areaChartGroup.selectAll('.area').data(top5);
+
+          areaUpdate.enter()
+                      .append('path')
                         .attr('class', 'area')
                         .attr('d', d => area(d.values))
-                        .attr('fill-opacity', d => { console.log(d); return 0.05; })
+                        .attr('fill-opacity', 0.05)
                         .attr('fill', (d, i) => colorScheme[i])
                         .attr('stroke', (d, i) => colorScheme[i])
                         .on('mouseover', function(d, i) {
-                          d3.select(this).attr('fill-opacity', 1);
-                          d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 1);
-                          tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 70}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
-                            <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
+                          d3.select(this)
+                            .transition(tIn)
+                            .attr('fill-opacity', 1);
+                          d3.select('#legend')
+                            .selectAll(`g:nth-child(${i+1})`)
+                            .transition(tIn)
+                            .attr('opacity', 1);
+                          tooltip
+                            .style('left', `${33}vw`)
+                            .style('top', `${areaYScale(d.values[2].gross) + 70}px`)
+                            .style('opacity', 1)
+                            .html(
+                              `<h4>${d.title}</h4>
+                               <h5>Weekly Total:</h5>
+                               <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
+                            );
                         })
                         .on('mouseout', function(d, i) {
-                          d3.select(this).attr('fill-opacity', 0.05);
-                          d3.select('#legend').selectAll(`g:nth-child(${i+1})`).attr('opacity', 0.5);
-                          tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                          d3.select(this)
+                            .transition(tOut)
+                            .attr('fill-opacity', 0.05);
+                          d3.select('#legend')
+                            .selectAll(`g:nth-child(${i+1})`)
+                            .transition(tOut)
+                            .attr('opacity', 0.5);
+                          tooltip
+                            .style('opacity', 0)
+                            .style('left', '0')
+                            .style('top', '0')
+                            .html(``);
                         });
 
   /* ---------------------------- legend data ---------------------------- */
 
           let legendEntry = legend.selectAll('g.legend-entry')
                                     .data(top5)
-                                    .enter().append('g')
+                                    .enter()
+                                    .append('g')
                                       .attr('class', 'legend-entry')
                                       .attr('opacity', 0.5)
                                       .on('mouseover', function(d, i) {
-                                        d3.select(this).attr('opacity', 1);
-                                        d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 1);
-                                        tooltip.style('left', `${33}vw`).style('top', `${yScale(d.values[2].gross) + 100}px`).style('opacity', 1).html(`<h4>${d.title}</h4>
-                                          <h5>Weekly Total:</h5><p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`);
+                                        d3.select(this)
+                                          .transition(tIn)
+                                          .attr('opacity', 1);
+                                        d3.selectAll(`.area:nth-child(${i+3})`)
+                                          .transition(tIn)
+                                          .attr('fill-opacity', 1);
+                                        tooltip
+                                          .style('left', `${33}vw`)
+                                          .style('top', `${areaYScale(d.values[2].gross) + 100}px`)
+                                          .style('opacity', 1)
+                                          .html(
+                                            `<h4>${d.title}</h4>
+                                             <h5>Weekly Total:</h5>
+                                             <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
+                                          );
                                       })
                                       .on('mouseout', function(d, i) {
-                                        d3.select(this).attr('opacity', 0.5);
-                                        d3.selectAll(`.area:nth-child(${i+3})`).attr('fill-opacity', 0.05);
-                                        tooltip.style('left', '0').style('top', '0').style('opacity', 0).html(``);
+                                        d3.select(this)
+                                          .transition(tOut)
+                                          .attr('opacity', 0.5);
+                                        d3.selectAll(`.area:nth-child(${i+3})`)
+                                          .transition(tOut)
+                                          .attr('fill-opacity', 0.05);
+                                        tooltip
+                                          .style('opacity', 0)
+                                          .style('left', '0')
+                                          .style('top', '0')
+                                          .html(``);
                                       });
 
           legendEntry.append('rect')
@@ -165,6 +231,13 @@
                       .attr('text-anchor', 'end')
                       .text(d => d.title);
 
+/* ---------------------------- circle data ---------------------------- */
+          pieChartGroup.selectAll('.arc')
+                        .data(top5)
+                        .enter()
+                        .append('g')
+
+
         })
         .catch((err) => {
           console.log(err);
@@ -177,6 +250,12 @@
         let width = parseInt(svg.style('width'));
         let height = parseInt(svg.style('height'));
         const aspect = width / height;
+        console.group('info');
+        console.log('width', width)
+        console.log('height', height)
+        console.log('svg', svg)
+        console.log('container', container)
+        console.groupEnd('info');
 
         svg.attr('viewBox', `0 0 ${width} ${height}`)
             .attr('preserveAspectRatio', 'xMinYMid')
