@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env'});
+require('dotenv').config({ path: '/home/capezzuto/portfolio/.env'});
 const config = require('../config/config.js');
 const cheerio = require('cheerio');
 const request = require('request');
@@ -78,7 +78,7 @@ module.exports = {
                 output.days = days;
                 output.save((err, updatedDoc) => {
                   if (err) return err;
-                  console.log('----------------->', updatedDoc);
+                  // console.log('----------------->', updatedDoc);
                   mongoose.disconnect();
                 })
               });
@@ -101,7 +101,7 @@ module.exports = {
           if(error) {
             console.log(error);
           }
-          console.log('status code:', response.statusCode);
+          // console.log('status code:', response.statusCode);
 
           const $ = cheerio.load(body);
 
