@@ -139,7 +139,12 @@
                         .attr('fill', (d, i) => colorScheme[i])
                         .attr('stroke', (d, i) => colorScheme[i])
                         .on('mouseover', function(d, i) {
-                          console.log('d is', d)
+                          let title = d.title;
+                          d3.select(this.parentNode)
+                            .selectAll('.area')
+                            .filter((d, i) => d.title !== title)
+                            .attr('fill-opacity', 0)
+                            .attr('stroke-opacity', 0.1);
                           d3.select(this)
                             .transition(tIn)
                             .attr('fill-opacity', 1);
@@ -165,6 +170,12 @@
                                     .style('fill', colorScheme[i]);
                         })
                         .on('mouseout', function(d, i) {
+                          let title = d.title;
+                          d3.select(this.parentNode)
+                            .selectAll('.area')
+                            .filter((d, i) => d.title !== title)
+                            .attr('fill-opacity', 0.05)
+                            .attr('stroke-opacity', 1);
                           d3.select(this)
                             .transition(tOut)
                             .attr('fill-opacity', 0.05);
@@ -186,34 +197,51 @@
                                       .attr('class', 'legend-entry')
                                       .attr('opacity', 0.5)
                                       .on('mouseover', function(d, i) {
+                                        let title = d.title;
+                                        d3.select(this.parentNode.previousSibling)
+                                          .selectAll('.area')
+                                          .filter((d, i) => d.title !== title)
+                                          .attr('fill-opacity', 0)
+                                          .attr('stroke-opacity', 0.1);
                                         d3.select(this)
                                           .transition(tIn)
                                           .attr('opacity', 1);
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tIn)
                                           .attr('fill-opacity', 1);
-                                        // tooltip
-                                        //   .style('left', `${33}vw`)
-                                        //   .style('top', `${areaYScale(d.values[2].gross) + 100}px`)
-                                        //   .style('opacity', 1)
-                                        //   .html(
-                                        //     `<h4>${d.title}</h4>
-                                        //      <h5>Weekly Total:</h5>
-                                        //      <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
-                                        //   );
+
+                                        const tooltip = areaChartGroup
+                                                          .append('g')
+                                                            .attr('id', 'tooltip')
+
+                                        tooltip.append('path')
+                                                  .attr('d', `M280 ${areaYScale(d.values[2].gross)} l 70 -40 l 200 0`)
+                                                  .attr('fill', 'none')
+                                                  .attr('stroke', '#000000')
+                                                  .attr('stroke-opacity', 0.5);
+
+                                        tooltip.append('text')
+                                                  .attr('dx', 360)
+                                                  .attr('dy', areaYScale(d.values[2].gross) - 50)
+                                                  .text(`${d.title} -- $${d.total.toLocaleString()}`)
+                                                  .style('fill', colorScheme[i]);
                                       })
                                       .on('mouseout', function(d, i) {
+                                        let title = d.title;
+                                        d3.select(this.parentNode.previousSibling)
+                                          .selectAll('.area')
+                                          .filter((d, i) => d.title !== title)
+                                          .attr('fill-opacity', 0.05)
+                                          .attr('stroke-opacity', 1);
                                         d3.select(this)
                                           .transition(tOut)
                                           .attr('opacity', 0.5);
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tOut)
                                           .attr('fill-opacity', 0.05);
-                                        // tooltip
-                                        //   .style('opacity', 0)
-                                        //   .style('left', '0')
-                                        //   .style('top', '0')
-                                        //   .html(``);
+                                        if (d3.select('#tooltip').nodes().length) {
+                                          areaChartGroup.select('#tooltip').remove()
+                                        }
                                       });
 
           legendEntry.append('rect')
