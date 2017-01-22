@@ -29,8 +29,8 @@
       let width = 960 - margin.right - margin.left; // temporary
       let areaHeight = 500 - margin.top - margin.bottom;
       let areaWidth = 960 - margin.right - margin.left;
-      let pieHeight = 300 - margin.top - margin.bottom;
-      let pieWidth = 300 - margin.right - margin.left;
+      let pieHeight = 400 - margin.top - margin.bottom;
+      let pieWidth = 400 - margin.right - margin.left;
       let barHeight = 300 - margin.top - margin.bottom;
       let barWidth = 960 - margin.right - margin.left;
 
@@ -66,12 +66,12 @@
       const legend = svg
                       .append('g')
                       .attr('id', 'legend')
-                      .attr('transform', `translate(${width + 35}, 0)`);
+                      .attr('transform', `translate(${areaWidth}, 0)`);
 
       const pieChartGroup = svg
                               .append('g')
                               .attr('id', 'pie-chart')
-                              .attr('transform', `translate(0, ${areaHeight + margin.top + margin.bottom})`);
+                              .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 +(2 * margin.top) + margin.bottom})`);
 
       const barChartGroup = svg
                               .append('g')
@@ -84,7 +84,7 @@
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
         .then((response) => {
           const data = response.data;
-          // console.log(data);
+          console.log(data);
           // let dateRange = 'November 4-10, 2016';
 
   /* ----------------------------- clean data ----------------------------- */
@@ -105,7 +105,7 @@
             );
           }
 
-          // console.log(top5);
+          console.log(top5);
   /* ------------------------------ axis data ------------------------------ */
           const areaXScale = d3.scaleTime()
                       .domain([
@@ -124,7 +124,7 @@
 
           areaChartGroup.append('g')
                       .attr('class', 'axis')
-                      .attr('transform', `translate(0, ${height})`)
+                      .attr('transform', `translate(0, ${areaHeight})`)
                       .call(areaXAxis);
           areaChartGroup.append('g')
                       .attr('class', 'axis')
@@ -232,10 +232,79 @@
                       .text(d => d.title);
 
 /* ---------------------------- circle data ---------------------------- */
-          pieChartGroup.selectAll('.arc')
-                        .data(top5)
-                        .enter()
-                        .append('g')
+          const radius = pieWidth / 2;
+          let top5week = [];
+          for (let i = 0; i < 5; i++) {
+            top5week.push({
+              title: data.movies[i].title,
+              week_gross: data.movies[i].week_gross
+            })
+          }
+
+          let totalOfFive = top5week.reduce((total, movie) => {
+            return total + movie.week_gross;
+          },0);
+
+          top5week.push({
+            title: 'Other',
+            week_gross: data.total_gross - totalOfFive
+          });
+          console.log('top5week', top5week)
+
+          const arc = d3.arc()
+                        .innerRadius(radius - 90)
+                        .outerRadius(radius - 10);
+
+          const labelArc = d3.arc()
+                              .innerRadius(radius - 60)
+                              .outerRadius(radius - 40);
+
+          const pie = d3.pie().sort(null).value(d => d.week_gross);
+          let pieUpdate = pieChartGroup
+                            .selectAll('.pie')
+                            .data(pie(top5week))
+                            // .enter()
+                            // .append('g')
+                            //   .attr('class', 'pie');
+
+          pieUpdate.enter()
+                    .append('path')
+                      .attr('d', arc)
+                      .style('fill', (d, i) => colorScheme[i])
+                      .style('fill-opacity', 0.5)
+                      .on('mouseover', function(d) {
+                        // console.log('this is', this);
+                        d3.select(this)
+                          .transition(tIn)
+                          .style('transform', 'scale(1.1)')
+                          .style('fill-opacity', 1);
+                      })
+                      .on('mouseout', function(d) {
+                        d3.select(this)
+                          .transition(tOut)
+                          .style('transform', 'scale(1)')
+                          .style('fill-opacity', 0.5)
+                      })
+
+          pieUpdate.enter()
+                    .append('text')
+                      .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+                      .attr('dy', '0.6em')
+                      .attr('dx', /*(d, i) => i > 1 && i !== 5 ? -20 : 0*/ -20)
+                      .text(d => {
+                        if (d.data.title.length > 15) {
+                          return d.data.title.slice(0, 11) + '...'
+                        }
+                        return d.data.title
+                      })
+                      .on('mouseover', function(d, i) {
+                        console.log(document.querySelectorAll('#pie-chart > path')[i])
+                        d3.select(`#pie-chart > path:nth-child(${i + 1})`)
+                          .transition(tIn)
+                          .style('transform', 'scale(1.1)')
+                      });
+
+
 
 
         })
@@ -250,12 +319,6 @@
         let width = parseInt(svg.style('width'));
         let height = parseInt(svg.style('height'));
         const aspect = width / height;
-        console.group('info');
-        console.log('width', width)
-        console.log('height', height)
-        console.log('svg', svg)
-        console.log('container', container)
-        console.groupEnd('info');
 
         svg.attr('viewBox', `0 0 ${width} ${height}`)
             .attr('preserveAspectRatio', 'xMinYMid')
