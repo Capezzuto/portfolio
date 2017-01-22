@@ -25,29 +25,21 @@
       const tOut = d3.transition().duration(100);
 
       const margin = { left: 50, right: 30, top: 20, bottom: 20 };
-      let height = 500 - margin.top - margin.bottom; // temporary
-      let width = 960 - margin.right - margin.left; // temporary
-      let areaHeight = 500 - margin.top - margin.bottom;
-      let areaWidth = 960 - margin.right - margin.left;
-      let pieHeight = 400 - margin.top - margin.bottom;
-      let pieWidth = 400 - margin.right - margin.left;
-      let barHeight = 300 - margin.top - margin.bottom;
-      let barWidth = 960 - margin.right - margin.left;
+      const areaHeight = 500 - margin.top - margin.bottom;
+      const areaWidth = 960 - margin.right - margin.left;
+      const pieHeight = 400 - margin.top - margin.bottom;
+      const pieWidth = 400 - margin.right - margin.left;
+      const barHeight = 300 - margin.top - margin.bottom;
+      const barWidth = 960 - margin.right - margin.left;
 
-      let fullWidth = width + margin.right + margin.left;
-      let fullHeight = areaHeight + pieHeight + barHeight + 3 * (margin.top + margin.bottom);
+      const fullWidth = areaWidth + margin.right + margin.left;
+      const fullHeight = areaHeight + pieHeight + barHeight + 3 * (margin.top + margin.bottom);
 
       const svg = d3.select('.container')
                     .append('svg')
                       .attr('height', fullHeight)
                       .attr('width', fullWidth)
                       .call(responsivefy);
-
-      const tooltip = d3.select('.container')
-                        .append('div')
-                          .attr('id', 'tooltip')
-                          .style('opacity', 0)
-                          .style('position', 'absolute');
 
       const colorScheme = [
         'rgb(0, 154, 212)',
@@ -84,16 +76,17 @@
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
         .then((response) => {
           const data = response.data;
-          console.log(data);
+          // console.log(data);
           // let dateRange = 'November 4-10, 2016';
 
   /* ----------------------------- clean data ----------------------------- */
           let top5 = [];
           for (let i = 0; i < 5; i++) {
-            let title = data.movies[i].title;
+            let { title, total } = data.movies[i];
             top5.push(
               {
-                title: title,
+                title,
+                total,
                 rank: data.movies[i].rank,
                 values: data.days.map(day => {
                   return {
@@ -105,14 +98,14 @@
             );
           }
 
-          console.log(top5);
+          // console.log(top5);
   /* ------------------------------ axis data ------------------------------ */
           const areaXScale = d3.scaleTime()
                       .domain([
                         d3.min(data.days, day => parseTime(day.date)),
                         d3.max(data.days, day => parseTime(day.date))
                       ])
-                      .range([0, width]);
+                      .range([0, areaWidth]);
 
           const areaXAxis = d3.axisBottom(areaXScale).ticks(7);
 
@@ -146,22 +139,30 @@
                         .attr('fill', (d, i) => colorScheme[i])
                         .attr('stroke', (d, i) => colorScheme[i])
                         .on('mouseover', function(d, i) {
+                          console.log('d is', d)
                           d3.select(this)
                             .transition(tIn)
                             .attr('fill-opacity', 1);
+
                           d3.select('#legend')
                             .selectAll(`g:nth-child(${i+1})`)
                             .transition(tIn)
                             .attr('opacity', 1);
-                          tooltip
-                            .style('left', `${33}vw`)
-                            .style('top', `${areaYScale(d.values[2].gross) + 70}px`)
-                            .style('opacity', 1)
-                            .html(
-                              `<h4>${d.title}</h4>
-                               <h5>Weekly Total:</h5>
-                               <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
-                            );
+
+                          const tooltip = areaChartGroup
+                                            .append('g')
+                                              .attr('id', 'tooltip')
+
+                          tooltip.append('path')
+                                    .attr('d', `M280 ${areaYScale(d.values[2].gross)} l 70 -40 l 200 0`)
+                                    .attr('fill', 'none')
+                                    .attr('stroke', '#000000')
+                                    .attr('stroke-opacity', 0.5)
+                          tooltip.append('text')
+                                    .attr('dx', 360)
+                                    .attr('dy', areaYScale(d.values[2].gross) - 50)
+                                    .text(`${d.title} -- $${d.total.toLocaleString()}`)
+                                    .style('fill', colorScheme[i]);
                         })
                         .on('mouseout', function(d, i) {
                           d3.select(this)
@@ -171,11 +172,9 @@
                             .selectAll(`g:nth-child(${i+1})`)
                             .transition(tOut)
                             .attr('opacity', 0.5);
-                          tooltip
-                            .style('opacity', 0)
-                            .style('left', '0')
-                            .style('top', '0')
-                            .html(``);
+                          if (d3.select('#tooltip').nodes().length) {
+                            areaChartGroup.select('#tooltip').remove()
+                          }
                         });
 
   /* ---------------------------- legend data ---------------------------- */
@@ -193,15 +192,15 @@
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tIn)
                                           .attr('fill-opacity', 1);
-                                        tooltip
-                                          .style('left', `${33}vw`)
-                                          .style('top', `${areaYScale(d.values[2].gross) + 100}px`)
-                                          .style('opacity', 1)
-                                          .html(
-                                            `<h4>${d.title}</h4>
-                                             <h5>Weekly Total:</h5>
-                                             <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
-                                          );
+                                        // tooltip
+                                        //   .style('left', `${33}vw`)
+                                        //   .style('top', `${areaYScale(d.values[2].gross) + 100}px`)
+                                        //   .style('opacity', 1)
+                                        //   .html(
+                                        //     `<h4>${d.title}</h4>
+                                        //      <h5>Weekly Total:</h5>
+                                        //      <p>$${data.movies[d.rank - 1].week_gross.toLocaleString()}</p>`
+                                        //   );
                                       })
                                       .on('mouseout', function(d, i) {
                                         d3.select(this)
@@ -210,11 +209,11 @@
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tOut)
                                           .attr('fill-opacity', 0.05);
-                                        tooltip
-                                          .style('opacity', 0)
-                                          .style('left', '0')
-                                          .style('top', '0')
-                                          .html(``);
+                                        // tooltip
+                                        //   .style('opacity', 0)
+                                        //   .style('left', '0')
+                                        //   .style('top', '0')
+                                        //   .html(``);
                                       });
 
           legendEntry.append('rect')
@@ -284,29 +283,21 @@
                           .transition(tOut)
                           .style('transform', 'scale(1)')
                           .style('fill-opacity', 0.5)
+
                       })
 
           pieUpdate.enter()
                     .append('text')
                       .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+                      .attr('dx', -20)
                       .attr('dy', '0.6em')
-                      .attr('dx', /*(d, i) => i > 1 && i !== 5 ? -20 : 0*/ -20)
+                      .attr('pointer-events', 'none')
                       .text(d => {
                         if (d.data.title.length > 15) {
                           return d.data.title.slice(0, 11) + '...'
                         }
                         return d.data.title
                       })
-                      .on('mouseover', function(d, i) {
-                        console.log(document.querySelectorAll('#pie-chart > path')[i])
-                        d3.select(`#pie-chart > path:nth-child(${i + 1})`)
-                          .transition(tIn)
-                          .style('transform', 'scale(1.1)')
-                      });
-
-
-
-
         })
         .catch((err) => {
           console.log(err);
