@@ -20,6 +20,7 @@
 
       const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
       const getDay = d3.timeFormat('%a');
+      const getDate = d3.timeFormat('%b %d, %Y')
 
       const tIn = d3.transition().duration(250);
       const tOut = d3.transition().duration(100);
@@ -210,6 +211,7 @@
 
           point.on('mouseover', function(d, i) {
                   let title = d3.select(this.parentNode).data()[0].title;
+
                   let { date, gross } = d;
                   d3.select(this)
                       .attr('fill-opacity', 0)
@@ -230,26 +232,40 @@
                                     .enter()
                                     .append('g')
                                     .attr('id', 'tooltip');
-                  // console.log('tooooooltip', tooltip);
+                  let xCoord = areaXScale(date);
 
                   tooltip.append('path')
-                          .attr('d', d => `M${areaXScale(date) + Math.cos(45) * 11.5} ${areaYScale(gross) - Math.sin(45) * 11.5} l 40 -40 l 200 0`)
+                          .attr('d', () => {
+                            if (xCoord > 600) {
+                              return `M${xCoord + Math.cos(135) * 10} ${areaYScale(gross) - Math.sin(45) * 10} l -40 -40 l -200 0`;
+                            }
+                            return `M${xCoord + Math.cos(45) * 11.5} ${areaYScale(gross) - Math.sin(45) * 11.5} l 40 -40 l 200 0`;
+                        })
                           .style('fill', 'none')
                           .style('stroke', '#000000')
-                          .style('stroke-opacity', 0.5)
                           .style('stroke-width', 0.5);
 
-                  // tooltip.append('text')
-                  //         .attr('dx', labelArc.centroid(d)[0] + 75)
-                  //         .attr('dy', labelArc.centroid(d)[1] - 53)
-                  //         // .attr('class', 'tooltip-pct')
-                  //         .text(`%${d.data.pct} of total weekly gross`);
-                  //
-                  // tooltip.append('text')
-                  //             .attr('class', 'pietip-title')
-                  //             .attr('dx', labelArc.centroid(d)[0] + 75)
-                  //             .attr('dy', labelArc.centroid(d)[1] - 73)
-                  //             .text(d.data.title);
+                  tooltip.append('text')
+                          .attr('dx', () => {
+                            if (xCoord > 600) {
+                              return xCoord + Math.cos(135) * 10 -235;
+                            }
+                            return xCoord + Math.cos(45) * 11.5 + 45
+                          })
+                          .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 43)
+                          .attr('class', 'tooltip-data')
+                          .text(`${getDate(date)} -- $${gross.toLocaleString()}`);
+
+                  tooltip.append('text')
+                              .attr('class', 'tooltip-title')
+                              .attr('dx', () => {
+                                if (xCoord > 600) {
+                                  return xCoord + Math.cos(135) * 10 -235;
+                                }
+                                return xCoord + Math.cos(45) * 11.5 + 45
+                              })
+                              .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 62)
+                              .text(title);
                 });
 
           point.on('mouseout', function(d, i) {
@@ -396,13 +412,20 @@
                                 .attr('dx', labelArc.centroid(d)[0] + 75)
                                 .attr('dy', labelArc.centroid(d)[1] - 53)
                                 .attr('class', 'pietip-pct')
-                                .text(`%${d.data.pct} of total weekly gross`);
+                                .text(`%${d.data.pct} of total weekly box office`);
+
+                        pietip.append('text')
+                                .attr('class', 'pietip-gross')
+                                .attr('dx', labelArc.centroid(d)[0] + 75)
+                                .attr('dy', labelArc.centroid(d)[1] - 70)
+                                .text(`$${d.data.week_gross.toLocaleString()}`);
 
                         pietip.append('text')
                                     .attr('class', 'pietip-title')
                                     .attr('dx', labelArc.centroid(d)[0] + 75)
-                                    .attr('dy', labelArc.centroid(d)[1] - 73)
+                                    .attr('dy', labelArc.centroid(d)[1] - 90)
                                     .text(d.data.title);
+
 
                         d3.select(this)
                           .transition(tIn)
