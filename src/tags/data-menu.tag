@@ -24,7 +24,7 @@
       const tIn = d3.transition().duration(250);
       const tOut = d3.transition().duration(100);
 
-      const margin = { left: 50, right: 30, top: 20, bottom: 20 };
+      const margin = { left: 50, right: 30, top: 30, bottom: 20 };
       const areaHeight = 500 - margin.top - margin.bottom;
       const areaWidth = 960 - margin.right - margin.left;
       const pieHeight = 400 - margin.top - margin.bottom;
@@ -58,7 +58,7 @@
       const legend = svg
                       .append('g')
                       .attr('id', 'legend')
-                      .attr('transform', `translate(${areaWidth}, 0)`);
+                      .attr('transform', `translate(${areaWidth}, 5)`);
 
       const pieChartGroup = svg
                               .append('g')
@@ -110,7 +110,7 @@
           const areaXAxis = d3.axisBottom(areaXScale).ticks(7);
 
           const areaYScale = d3.scaleLinear()
-                      .domain([0, d3.max(data.days, day => day.top10[0].daily_gross)])
+                      .domain([0, d3.max(data.days, day => day.top10[0].daily_gross) * 1.2])
                       .range([areaHeight, 0]);
 
           const areaYAxis = d3.axisLeft(areaYScale).tickFormat(d3.format('$,.2s'));
@@ -195,6 +195,43 @@
                           }
                         });
 
+          areaUpdate.enter()
+                      .append('g')
+                        .attr('class', 'points')
+                        .attr('data-index', (d, i) => i)
+                        .selectAll('circle')
+                        .data(d => d.values)
+                        .enter()
+                          .append('circle')
+                            .attr('r', 3)
+                            .attr('cx', d => areaXScale(d.date))
+                            .attr('cy', d => areaYScale(d.gross))
+                            .style('fill', function() {
+                              let i = d3.select(this.parentNode).data()[0].rank - 1;
+                              return colorScheme[i];
+                            })
+                            .style('stroke', function() {
+                              let i = d3.select(this.parentNode).data()[0].rank - 1;
+                              return colorScheme[i];
+                            })
+                            .style('stroke-width', 20)
+                            .style('stroke-opacity', 0)
+                            .on('mouseover', function(d, i) {
+                              d3.select(this)
+                                  .attr('r', 3)
+                                  .style('fill-opacity', 0)
+                                  .style('stroke-opacity', 1)
+                                  .style('stroke-width', 20);
+                            })
+                            .on('mouseout', function(d, i) {
+                              d3.select(this)
+                                  .attr('r', 3)
+                                  .style('fill-opacity', 1)
+                                  .style('stroke-opacity', 0)
+                                  .style('stroke-width', 20);
+                            })
+
+
   /* ---------------------------- legend data ---------------------------- */
 
           let legendEntry = legend.selectAll('g.legend-entry')
@@ -204,13 +241,17 @@
                                       .attr('class', 'legend-entry')
                                       .attr('opacity', 0.5)
                                       .on('mouseover', function(d, i) {
-                                        let title = d.title;
-
+                                        let entryD = d;
                                         d3.select(this.parentNode.previousSibling)
                                           .selectAll('.area')
-                                          .filter((d, i) => d.title !== title)
+                                          .filter(d => d.title !== entryD.title)
                                           .attr('fill-opacity', 0)
                                           .attr('stroke-opacity', 0.1);
+
+                                        d3.select(this.parentNode.previousSibling)
+                                          .selectAll('.points')
+                                          .filter(d => d.title !== entryD.title)
+                                          .attr('fill-opacity', 0.3)
 
                                         d3.select(this)
                                           .transition(tIn)
@@ -218,32 +259,35 @@
 
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tIn)
-                                          .attr('fill-opacity', 1);
+                                          .attr('fill-opacity', 0.3);
 
-                                        const tooltip = areaChartGroup
-                                                          .append('g')
-                                                            .attr('id', 'tooltip')
-
-                                        tooltip.append('path')
-                                                  .attr('d', `M280 ${areaYScale(d.values[2].gross)} l 70 -40 l 200 0`)
-                                                  .attr('fill', 'none')
-                                                  .attr('stroke', '#000000')
-                                                  .attr('stroke-opacity', 0.5);
-
-                                        tooltip.append('text')
-                                                  .attr('dx', 360)
-                                                  .attr('dy', areaYScale(d.values[2].gross) - 50)
-                                                  .text(`${d.title} -- $${d.total.toLocaleString()}`)
-                                                  .style('fill', colorScheme[i]);
+                                        // const tooltip = areaChartGroup
+                                        //                   .append('g')
+                                        //                     .attr('id', 'tooltip')
+                                        //
+                                        // tooltip.append('path')
+                                        //           .attr('d', `M280 ${areaYScale(d.values[2].gross)} l 70 -40 l 200 0`)
+                                        //           .attr('fill', 'none')
+                                        //           .attr('stroke', '#000000')
+                                        //           .attr('stroke-opacity', 0.5);
+                                        //
+                                        // tooltip.append('text')
+                                        //           .attr('dx', 360)
+                                        //           .attr('dy', areaYScale(d.values[2].gross) - 50)
+                                        //           .text(`${d.title} -- $${d.total.toLocaleString()}`)
+                                        //           .style('fill', colorScheme[i]);
                                       })
                                       .on('mouseout', function(d, i) {
                                         let title = d.title;
 
                                         d3.select(this.parentNode.previousSibling)
                                           .selectAll('.area')
-                                          .filter((d, i) => d.title !== title)
                                           .attr('fill-opacity', 0.05)
                                           .attr('stroke-opacity', 1);
+
+                                          d3.select(this.parentNode.previousSibling)
+                                            .selectAll('.points')
+                                            .attr('fill-opacity', 1)
 
                                         d3.select(this)
                                           .transition(tOut)
