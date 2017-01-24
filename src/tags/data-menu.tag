@@ -140,11 +140,13 @@
                         .attr('stroke', (d, i) => colorScheme[i])
                         .on('mouseover', function(d, i) {
                           let title = d.title;
+
                           d3.select(this.parentNode)
                             .selectAll('.area')
                             .filter((d, i) => d.title !== title)
                             .attr('fill-opacity', 0)
                             .attr('stroke-opacity', 0.1);
+
                           d3.select(this)
                             .transition(tIn)
                             .attr('fill-opacity', 1);
@@ -162,7 +164,8 @@
                                     .attr('d', `M280 ${areaYScale(d.values[2].gross)} l 70 -40 l 200 0`)
                                     .attr('fill', 'none')
                                     .attr('stroke', '#000000')
-                                    .attr('stroke-opacity', 0.5)
+                                    .attr('stroke-opacity', 0.5);
+
                           tooltip.append('text')
                                     .attr('dx', 360)
                                     .attr('dy', areaYScale(d.values[2].gross) - 50)
@@ -171,18 +174,22 @@
                         })
                         .on('mouseout', function(d, i) {
                           let title = d.title;
+
                           d3.select(this.parentNode)
                             .selectAll('.area')
                             .filter((d, i) => d.title !== title)
                             .attr('fill-opacity', 0.05)
                             .attr('stroke-opacity', 1);
+
                           d3.select(this)
                             .transition(tOut)
                             .attr('fill-opacity', 0.05);
+
                           d3.select('#legend')
                             .selectAll(`g:nth-child(${i+1})`)
                             .transition(tOut)
                             .attr('opacity', 0.5);
+
                           if (d3.select('#tooltip').nodes().length) {
                             areaChartGroup.select('#tooltip').remove()
                           }
@@ -198,14 +205,17 @@
                                       .attr('opacity', 0.5)
                                       .on('mouseover', function(d, i) {
                                         let title = d.title;
+
                                         d3.select(this.parentNode.previousSibling)
                                           .selectAll('.area')
                                           .filter((d, i) => d.title !== title)
                                           .attr('fill-opacity', 0)
                                           .attr('stroke-opacity', 0.1);
+
                                         d3.select(this)
                                           .transition(tIn)
                                           .attr('opacity', 1);
+
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tIn)
                                           .attr('fill-opacity', 1);
@@ -228,17 +238,21 @@
                                       })
                                       .on('mouseout', function(d, i) {
                                         let title = d.title;
+
                                         d3.select(this.parentNode.previousSibling)
                                           .selectAll('.area')
                                           .filter((d, i) => d.title !== title)
                                           .attr('fill-opacity', 0.05)
                                           .attr('stroke-opacity', 1);
+
                                         d3.select(this)
                                           .transition(tOut)
                                           .attr('opacity', 0.5);
+
                                         d3.selectAll(`.area:nth-child(${i+3})`)
                                           .transition(tOut)
                                           .attr('fill-opacity', 0.05);
+
                                         if (d3.select('#tooltip').nodes().length) {
                                           areaChartGroup.select('#tooltip').remove()
                                         }
@@ -264,7 +278,8 @@
           for (let i = 0; i < 5; i++) {
             top5week.push({
               title: data.movies[i].title,
-              week_gross: data.movies[i].week_gross
+              week_gross: data.movies[i].week_gross,
+              pct: ((data.movies[i].week_gross / data.total_gross) * 100).toFixed(2)
             })
           }
 
@@ -274,7 +289,8 @@
 
           top5week.push({
             title: 'Other',
-            week_gross: data.total_gross - totalOfFive
+            week_gross: data.total_gross - totalOfFive,
+            pct: (((data.total_gross - totalOfFive)/ data.total_gross) * 100).toFixed(2)
           });
           console.log('top5week', top5week)
 
@@ -299,19 +315,48 @@
                       .attr('d', arc)
                       .style('fill', (d, i) => colorScheme[i])
                       .style('fill-opacity', 0.5)
-                      .on('mouseover', function(d) {
-                        // console.log('this is', this);
+                      .on('mouseover', function(d, i) {
+                        const pietip = pieChartGroup
+                                          .append('g')
+                                          .attr('id', 'pietip');
+
+                        pietip.append('path')
+                                .attr('d', `M${labelArc.centroid(d)[0]} ${labelArc.centroid(d)[1] - 10} l 70 -40 l 200 0`)
+                                .style('fill', 'none')
+                                .style('stroke', '#000000')
+                                .style('stroke-opacity', '0.5');
+
+                        pietip.append('text')
+                                .attr('dx', labelArc.centroid(d)[0] + 75)
+                                .attr('dy', labelArc.centroid(d)[1] - 53)
+                                .attr('class', 'pietip-pct')
+                                .text(`%${d.data.pct} of total weekly gross`);
+
+
+
+                        pietip.append('text')
+                                    .attr('class', 'pietip-title')
+                                    .attr('dx', labelArc.centroid(d)[0] + 75)
+                                    .attr('dy', labelArc.centroid(d)[1] - 73)
+                                    .text(d.data.title);
+
+
+
                         d3.select(this)
                           .transition(tIn)
                           .style('transform', 'scale(1.1)')
                           .style('fill-opacity', 1);
                       })
-                      .on('mouseout', function(d) {
+                      .on('mouseout', function(d, i) {
+
                         d3.select(this)
                           .transition(tOut)
                           .style('transform', 'scale(1)')
                           .style('fill-opacity', 0.5)
 
+                        if (d3.select('#pietip').nodes().length) {
+                          pieChartGroup.select('#pietip').remove()
+                        }
                       })
 
           pieUpdate.enter()
@@ -320,6 +365,7 @@
                       .attr('dx', -20)
                       .attr('dy', '0.6em')
                       .attr('pointer-events', 'none')
+                      .style('fill-opacity', 0.5)
                       .text(d => {
                         if (d.data.title.length > 15) {
                           return d.data.title.slice(0, 11) + '...'

@@ -41,3 +41,17 @@
 .pie-chart text {
   font-size: 1.2em;
 }
+
+#pietip {
+  fill: #000000;
+}
+
+#pietip .pietip-title {
+  font-family: $comfortaa;
+}
+
+#pietip .pietip-pct {
+  font-family: $abel;
+  font-size: 0.9em;
+  fill: $magenta;
+}
