@@ -30,7 +30,7 @@
       const areaWidth = 960 - margin.right - margin.left;
       const pieHeight = 400 - margin.top - margin.bottom;
       const pieWidth = 400 - margin.right - margin.left;
-      const barHeight = 300 - margin.top - margin.bottom;
+      const barHeight = 450 - margin.top - margin.bottom;
       const barWidth = 960 - margin.right - margin.left;
 
       const fullWidth = areaWidth + margin.right + margin.left;
@@ -69,7 +69,7 @@
       const barChartGroup = svg
                               .append('g')
                               .attr('id', 'bar-chart')
-                              .attr('transform', `translate(0, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
+                              .attr('transform', `translate(${margin.left}, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
 
       let selectedWeek = '2016_45';
 
@@ -77,7 +77,7 @@
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
         .then((response) => {
           const data = response.data;
-          // console.log(data);
+          console.log(data);
           // let dateRange = 'November 4-10, 2016';
 
   /* ----------------------------- clean data ----------------------------- */
@@ -457,10 +457,52 @@
                         }
                         return d.data.title
                       })
+
+  /* ------------------------------ bar graph ------------------------------ */
+
+          let top5Hash = {};
+          for (let i = 0; i < 5; i++) {
+            top5Hash[data.movies[i].title] = data.movies[i].title;
+          }
+
+          const dailyData = data.days.map(day => {
+            return { date: day.date,
+                     top5: day.top10.filter(movie => movie.title in top5Hash)
+                   };
+          });
+
+          const barX0Scale = d3.scaleBand()
+                                .rangeRound([0, barWidth])
+                                .paddingInner(0.1)
+                                .domain(dailyData.map(d => parseTime(d.date)))
+
+          const barX1Scale = d3.scaleBand()
+                                .padding(0.05)
+                                .domain(top5Hash)
+
+          const barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
+
+          const barYScale = d3.scaleLinear()
+                              .domain([0, d3.max(dailyData, day => d3.max(day.top5, movie => movie.avg) )])
+                              .range([barHeight, 0]);
+
+          const barYAxis = d3.axisLeft(barYScale).tickFormat(d3.format('$,.2s'))
+
+          barChartGroup.append('g')
+                        .attr('class', 'barXAxis')
+                        .attr('transform', `translate(0, ${barHeight})`)
+                        .call(barXAxis);
+
+          barChartGroup.append('g')
+                        .attr('class', 'barYAxis')
+                        .call(barYAxis);
+
         })
         .catch((err) => {
           console.log(err);
         });
+
+
 
   /* ---------- responsivefy originally written by Brendan Sudol ---------- */
   /* ---------  http://www.brendansudol.com/writing/responsive-d3 ---------  */
