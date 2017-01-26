@@ -376,7 +376,7 @@
             week_gross: data.total_gross - totalOfFive,
             pct: (((data.total_gross - totalOfFive)/ data.total_gross) * 100).toFixed(2)
           });
-          console.log('top5week', top5week)
+          // console.log('top5week', top5week)
 
           const arc = d3.arc()
                         .innerRadius(radius - 90)
@@ -478,7 +478,8 @@
 
           const barX1Scale = d3.scaleBand()
                                 .padding(0.05)
-                                .domain(top5Hash)
+                                .domain(Object.keys(top5Hash))
+                                .rangeRound([0, barX0Scale.bandwidth()])
 
           const barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
 
@@ -496,6 +497,29 @@
           barChartGroup.append('g')
                         .attr('class', 'barYAxis')
                         .call(barYAxis);
+
+          let barUpdate = barChartGroup.selectAll('.bargroup').data(dailyData);
+
+          let bargroups = barUpdate.enter()
+                        .append('g')
+                          .attr('class', 'bargroup')
+                          .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`);
+
+          console.log('bargroups:', bargroups);
+
+          bargroups.selectAll('rect')
+                    .data(d => d.top5)
+                    .enter()
+                    .append('rect')
+                    .attr('x', d => barX1Scale(d.title))
+                      .attr('y', d => barYScale(d.avg))
+                      .attr('width', barX1Scale.bandwidth())
+                      .attr('height', d => barHeight - barYScale(d.avg))
+                      .attr('fill', (d, i) => colorScheme[i]);
+                          // .attr('y', d => barYScale(d.avg))
+                          // .attr('width', barX1Scale.bandwidth())
+                          // .attr('height', d => height - barYScale(d.avg))
+                          // .attr('fill', '#FF0000')
 
         })
         .catch((err) => {
