@@ -25,8 +25,9 @@
       const tIn = d3.transition().duration(250);
       const tOut = d3.transition().duration(100);
 
-      const margin = { left: 50, right: 30, top: 30, bottom: 20 };
-      const areaHeight = 600 - margin.top - margin.bottom;
+      const margin = { left: 50, right: 30, top: 50, bottom: 50 };
+      const headingHeight = 30;
+      const areaHeight = 650 - headingHeight - margin.top - margin.bottom;
       const areaWidth = 960 - margin.right - margin.left;
       const pieHeight = 400 - margin.top - margin.bottom;
       const pieWidth = 400 - margin.right - margin.left;
@@ -34,7 +35,7 @@
       const barWidth = 960 - margin.right - margin.left;
 
       const fullWidth = areaWidth + margin.right + margin.left;
-      const fullHeight = areaHeight + pieHeight + barHeight + 3 * (margin.top + margin.bottom);
+      const fullHeight = areaHeight + pieHeight + barHeight + headingHeight + 3 * (margin.top + margin.bottom);
 
       const svg = d3.select('.container')
                     .append('svg')
@@ -52,14 +53,34 @@
         'rgb(255, 242, 0)'
       ];
 
+      const areaHeading = svg
+                            .append('text')
+                            .attr('transform', `translate(${margin.left}, ${headingHeight})`)
+                            .attr('class', 'boxoffice-heading')
+                            .text('Daily sales for top five movies');
+
+      const pieHeading = svg
+                            .append('text')
+                            .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
+                            .attr('class', 'boxoffice-heading')
+                            .attr('text-anchor', 'end')
+                            .text('Total sales for week, top five movies');
+
+      const barHeading = svg
+                            .append('text')
+                            .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
+                            .attr('class', 'boxoffice-heading')
+                            .attr('text-anchor', 'end')
+                            .text('Daily per theater average, top five movies');
+
       const areaChartGroup = svg
                               .append('g')
                               .attr('id', 'area-chart')
-                              .attr('transform', `translate(${margin.left}, ${margin.top})`);
+                              .attr('transform', `translate(${margin.left}, ${margin.top + headingHeight})`);
       const legend = svg
                       .append('g')
                       .attr('id', 'legend')
-                      .attr('transform', `translate(${areaWidth}, 5)`);
+                      .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
 
       const pieChartGroup = svg
                               .append('g')
@@ -505,8 +526,6 @@
                           .attr('class', 'bargroup')
                           .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`);
 
-          console.log('bargroups:', bargroups);
-
           bargroups.selectAll('rect')
                     .data(d => d.top5)
                     .enter()
@@ -516,10 +535,6 @@
                       .attr('width', barX1Scale.bandwidth())
                       .attr('height', d => barHeight - barYScale(d.avg))
                       .attr('fill', (d, i) => colorScheme[i]);
-                          // .attr('y', d => barYScale(d.avg))
-                          // .attr('width', barX1Scale.bandwidth())
-                          // .attr('height', d => height - barYScale(d.avg))
-                          // .attr('fill', '#FF0000')
 
         })
         .catch((err) => {
