@@ -53,44 +53,41 @@
         'rgb(255, 242, 0)'
       ];
 
-      const areaHeading = svg
-                            .append('text')
-                            .attr('transform', `translate(${margin.left}, ${headingHeight})`)
-                            .attr('class', 'boxoffice-heading')
-                            .text('Daily sales for top five movies');
+      const areaHeading = svg.append('text')
+                              .attr('transform', `translate(${margin.left}, ${headingHeight})`)
+                              .attr('class', 'boxoffice-heading')
+                              .text('Daily sales for top five movies');
 
-      const pieHeading = svg
-                            .append('text')
-                            .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
-                            .attr('class', 'boxoffice-heading')
-                            .attr('text-anchor', 'end')
-                            .text('Total sales for week, top five movies');
+      const pieHeading = svg.append('text')
+                              .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
+                              .attr('class', 'boxoffice-heading')
+                              .attr('text-anchor', 'end')
+                              .text('Total sales for week, top five movies');
 
-      const barHeading = svg
-                            .append('text')
-                            .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
-                            .attr('class', 'boxoffice-heading')
-                            .attr('text-anchor', 'end')
-                            .text('Daily per theater average, top five movies');
+      const barHeading = svg.append('text')
+                              .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
+                              .attr('class', 'boxoffice-heading')
+                              .attr('text-anchor', 'end')
+                              .text('Daily per theater average, top five movies');
 
-      const areaChartGroup = svg
-                              .append('g')
-                              .attr('id', 'area-chart')
-                              .attr('transform', `translate(${margin.left}, ${margin.top + headingHeight})`);
-      const legend = svg
-                      .append('g')
-                      .attr('id', 'legend')
-                      .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
+      const areaChartGroup = svg.append('g')
+                                  .attr('id', 'area-chart')
+                                  .attr('transform', `translate(${margin.left}, ${margin.top + headingHeight})`);
+      const legend = svg.append('g')
+                          .attr('id', 'legend')
+                          .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
 
-      const pieChartGroup = svg
-                              .append('g')
-                              .attr('id', 'pie-chart')
-                              .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 +(2 * margin.top) + margin.bottom})`);
+      const pieChartGroup = svg.append('g')
+                                .attr('id', 'pie-chart')
+                                .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 +(2 * margin.top) + margin.bottom})`);
 
-      const barChartGroup = svg
-                              .append('g')
-                              .attr('id', 'bar-chart')
-                              .attr('transform', `translate(${margin.left}, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
+      const barChartGroup = svg.append('g')
+                                  .attr('id', 'bar-chart')
+                                  .attr('transform', `translate(${margin.left}, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
+
+      const barLegend = svg.append('g')
+                            .attr('id', 'bar-legend')
+                            .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top})`);
 
       let selectedWeek = '2016_45';
 
@@ -310,7 +307,7 @@
 
   /* ---------------------------- legend data ---------------------------- */
 
-          let legendEntry = legend.selectAll('g.legend-entry')
+          let legendEntry = legend.selectAll('.legend-entry')
                                     .data(top5)
                                     .enter()
                                     .append('g')
@@ -368,11 +365,11 @@
                       .attr('width', 30)
                       .attr('height', 30)
                       .attr('x', 15)
-                      .attr('y', (d, i) => i * 50);
+                      .attr('y', (d, i) => i * 45);
 
           legendEntry.append('text')
                       .attr('x', 0)
-                      .attr('y', (d, i) => i * 50 + 20)
+                      .attr('y', (d, i) => i * 45 + 20)
                       .attr('fill', (d, i) => colorScheme[i])
                       .attr('text-anchor', 'end')
                       .text(d => d.title);
@@ -482,8 +479,10 @@
   /* ------------------------------ bar graph ------------------------------ */
 
           let top5Hash = {};
+          let top5Keys = [];
           for (let i = 0; i < 5; i++) {
             top5Hash[data.movies[i].title] = data.movies[i].title;
+            top5Keys.push(data.movies[i].title);
           }
 
           const dailyData = data.days.map(day => {
@@ -499,7 +498,7 @@
 
           const barX1Scale = d3.scaleBand()
                                 .padding(0.05)
-                                .domain(Object.keys(top5Hash))
+                                .domain(top5Keys)
                                 .rangeRound([0, barX0Scale.bandwidth()])
 
           const barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
@@ -535,6 +534,30 @@
                       .attr('width', barX1Scale.bandwidth())
                       .attr('height', d => barHeight - barYScale(d.avg))
                       .attr('fill', (d, i) => colorScheme[i]);
+
+  /* ---------------------------- bar chart legend ---------------------------- */
+
+          let barLegendEntry = barLegend.selectAll('.legend-entry')
+                                        .data(top5Keys)
+                                        .enter()
+                                        .append('g')
+                                          .attr('class', 'legend-entry');
+
+          barLegendEntry.append('rect')
+                          .attr('fill', (d,i) => colorScheme[i])
+                          .attr('width', 30)
+                          .attr('height', 18)
+                          .attr('x', 30)
+                          .attr('y', (d, i) => i * 30);
+
+          barLegendEntry.append('text')
+                          .attr('fill', (d, i) => colorScheme[i])
+                          .attr('text-anchor', 'end')
+                          .attr('x', 10)
+                          .attr('y', (d, i) => i * 30 + 15)
+                          .text(d => d);
+
+
 
         })
         .catch((err) => {
