@@ -1,13 +1,14 @@
 const moment = require('moment');
 const scraper = require('./scrape-bom-mongo.js');
 const weekCount = require('./week.json');
+const fs = require('fs');
 
 let yesterday = moment().subtract(1, 'days'); // start with yesterday's date
 let date = yesterday.format('YYYY-MM-DD'); // get formatted date for query
 let week = weekCount.week < 10 ? '0' + weekCount.week : String(weekCount.week); // set initial value for week according to iso standard
 let year = String(weekCount.year); // now get year according to yest's value, altered by yearStartDay
-console.log(`typeof week is ${typeof weekCount.week} and typeof year is ${typeof weekCount.year}`)
-
+// console.log(`typeof week is ${typeof weekCount.week} and typeof year is ${typeof weekCount.year}`)
+console.log('yesterday.isoWeekday() is', yesterday.isoWeekday());
 
 let thisYear = moment().year(); // year for today's date
 let yearStartDay = moment(thisYear, 'YYYY').isoWeekday(); // check the day of the week the year started on
