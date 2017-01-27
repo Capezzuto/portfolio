@@ -87,9 +87,9 @@
 
       const barLegend = svg.append('g')
                             .attr('id', 'bar-legend')
-                            .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top})`);
+                            .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top - 30})`);
 
-      let selectedWeek = '2016_45';
+      let selectedWeek = '2016_47';
 
 
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
@@ -108,10 +108,11 @@
                 total,
                 rank: data.movies[i].rank,
                 values: data.days.map(day => {
+                  let movie = day.top10.find(movie => movie.title === title);
                   return {
                     date: parseTime(day.date),
-                    gross: day.top10.find(movie => movie.title === title).daily_gross || 0
-                   }
+                    gross: movie ? movie.daily_gross : 0
+                  };
                  })
               }
             );
@@ -487,7 +488,15 @@
 
           const dailyData = data.days.map(day => {
             return { date: day.date,
-                     top5: day.top10.filter(movie => movie.title in top5Hash)
+                     top5: top5Keys.map(key => {
+                      let movie = day.top10.find(movie => movie.title === key);
+                      return movie ? movie : {
+                                               avg: 0,
+                                               daily_gross: 0,
+                                               theaters: 0,
+                                               title: key
+                                             };
+                     })
                    };
           });
 
