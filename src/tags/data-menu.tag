@@ -89,7 +89,7 @@
                             .attr('id', 'bar-legend')
                             .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top - 30})`);
 
-      let selectedWeek = '2016_47';
+      let selectedWeek = '2016_45';
 
 
       axios.get(`/data/boxoffice/weekly/${selectedWeek}`)
@@ -513,7 +513,7 @@
           const barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
 
           const barYScale = d3.scaleLinear()
-                              .domain([0, d3.max(dailyData, day => d3.max(day.top5, movie => movie.avg) )])
+                              .domain([0, d3.max(dailyData, day => d3.max(day.top5, movie => movie.avg)) * 1.1])
                               .range([barHeight, 0]);
 
           const barYAxis = d3.axisLeft(barYScale).tickFormat(d3.format('$,.2s'))
@@ -532,17 +532,71 @@
           let bargroups = barUpdate.enter()
                         .append('g')
                           .attr('class', 'bargroup')
-                          .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`);
+                          .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`)
+                          .attr('data-transform', d => barX0Scale(parseTime(d.date)));
 
-          bargroups.selectAll('rect')
+          let bar = bargroups.selectAll('.bar')
                     .data(d => d.top5)
                     .enter()
                     .append('rect')
-                    .attr('x', d => barX1Scale(d.title))
+                      .attr('class', (d, i) => `bar bar-${i}`)
+                      .attr('x', d => barX1Scale(d.title))
                       .attr('y', d => barYScale(d.avg))
                       .attr('width', barX1Scale.bandwidth())
                       .attr('height', d => barHeight - barYScale(d.avg))
-                      .attr('fill', (d, i) => colorScheme[i]);
+                      .attr('fill', (d, i) => colorScheme[i])
+                      .attr('fill-opacity', 0.5);
+
+          bar.on('mouseover', function(d, i) {
+
+            d3.select(this)
+              .transition(tIn)
+              .attr('fill-opacity', 1);
+
+            const groupXVal = parseInt(this.parentNode
+                                        .getAttribute('transform')
+                                        .split(',')[0]
+                                        .slice(10));
+            const bartip = barChartGroup.append('g')
+                                          .attr('id', 'bartip');
+
+            bartip.append('path')
+                    .attr('d', () => {
+                      if (groupXVal > 550) {
+                        return `M${barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2} ${barYScale(d.avg)} l -50 -25 l -150 0`;
+                      }
+                      return `M${barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2} ${barYScale(d.avg)} l 50 -25 l 150 0`;
+                    })
+                    .attr('fill', 'none')
+                    .attr('stroke', '#000000');
+
+            bartip.append('text')
+                    .attr('dx', () => {
+                      if (groupXVal > 550) {
+                        return barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2 - 196;
+                      }
+                      return barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2 + 52;
+                    })
+                    .attr('dy', barYScale(d.avg) - 27)
+                    .text(`Average: $${d.avg}`);
+
+            bartip.append('text')
+                    .attr('dx', () => {
+                      if (groupXVal > 550) {
+                        return barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2 - 196;
+                      }
+                      return barX1Scale(d.title) + groupXVal + barX1Scale.bandwidth()/2 + 52;
+                    })
+                    .attr('dy', barYScale(d.avg) - 45)
+                    .text(`Theaters: ${d.theaters}`)
+
+
+          });
+
+          bar.on('mouseout', function() {
+            d3.select('#bartip').remove();
+            d3.select(this).transition(tOut).attr('fill-opacity', 0.5);
+          })
 
   /* ---------------------------- bar chart legend ---------------------------- */
 
@@ -554,6 +608,7 @@
 
           barLegendEntry.append('rect')
                           .attr('fill', (d,i) => colorScheme[i])
+                          .attr('fill-opacity', 0.5)
                           .attr('width', 30)
                           .attr('height', 18)
                           .attr('x', 30)
@@ -566,7 +621,30 @@
                           .attr('y', (d, i) => i * 30 + 15)
                           .text(d => d);
 
+          barLegendEntry.on('mouseover', function(d, i) {
+            console.log('this', this);
+            console.log('d', d);
+            d3.select(this.parentNode.previousSibling)
+               .selectAll(`.bar-${i}`)
+               .transition(tIn)
+               .attr('fill-opacity', 1);
 
+            let selectionn = d3.select(this.parentNode.previousSibling)
+                .selectAll('.bar')
+                .filter(function() {
+                  return this.classList[1] !== `bar-${i}`;
+                })
+                .transition(tIn)
+                .attr('fill-opacity', 0);
+
+          });
+
+          barLegendEntry.on('mouseout', function(d, i) {
+            d3.select(this.parentNode.previousSibling)
+              .selectAll(`.bar`)
+              .transition()
+              .attr('fill-opacity', 0.5);
+          });
 
         })
         .catch((err) => {
