@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/home/capezzuto/portfolio/.env'});
+require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env'});
 const config = require('../config/config.js');
 const cheerio = require('cheerio');
 const request = require('request');
@@ -10,7 +10,7 @@ const BoxOfficeDaily = require('../boxOffice/boxOfficeDailyModel.js');
 const args = process.argv.slice(2);
 
 module.exports = {
-  getWeeklyData: function(arg) {
+  getWeeklyData: function(arg, cb) {
     mongoose.connect(config.db);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, 'Error opening connection'));
@@ -90,7 +90,7 @@ module.exports = {
       });
     });
   },
-  getDailyData: function(arg) {
+  getDailyData: function(arg, cb) {
     mongoose.connect(config.db);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, 'Error opening connection'));
@@ -135,14 +135,21 @@ module.exports = {
             return obj;
           }, { date: arg.date, week: `${arg.year}_${arg.week}`, top10: [] });
 
-          BoxOfficeDaily.create(jsonData)
+          return BoxOfficeDaily.create(jsonData)
             .then((output) => {
               console.log('created...', output);
               mongoose.disconnect();
+              return output
+            })
+            .then((output) =>{
+              if(cb) {
+                cb();
+              }
             })
             .catch((err) => {
               console.log('error', err);
               mongoose.disconnect();
+              return err;
             });
       });
     });
