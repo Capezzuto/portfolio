@@ -2,6 +2,7 @@
 // const dailyData = require('../scraper/daily-data.json');
 const DailyBoxOffice = require('./boxOfficeDailyModel.js');
 const WeeklyBoxOffice = require('./boxOfficeWeeklyModel.js');
+const redis = require('redis');
 
 const url = require('url');
 
