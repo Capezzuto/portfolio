@@ -13,6 +13,7 @@ module.exports = {
   getWeeklyData: function(arg, cb) {
     let _ph, _page;
     const bomURL = `http://www.boxofficemojo.com/weekly/chart/?yr=${arg.year}&wk=${arg.week}&p=.htm`;
+
     mongoose.connect(config.db);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, 'Error opening connection'));
@@ -115,21 +116,33 @@ module.exports = {
     });
   },
   getDailyData: function(arg, cb) {
+    let _ph, _page;
+    const bomURL = `http://www.boxofficemojo.com/daily/chart/?sortdate=${arg.date}&view=1day&p=.htm`;
+
     mongoose.connect(config.db);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, 'Error opening connection'));
     db.on('open', () => {
-      let dailyData;
-      request(`http://www.boxofficemojo.com/daily/chart/?sortdate=${arg.date}&view=1day&p=.htm`,
-        (error, response, body) => {
-          if(error) {
-            console.log(error);
-          }
-          // console.log('status code:', response.statusCode);
+      phantom.create()
+        .then((ph) => {
+        _ph = ph;
+        return _ph.createPage();
+        })
+        .then((page) => {
+          _page = page;
+          return _page.open(bomURL);
+        })
+        .then((status) => {
+          console.log(status);
+          return _page.evaluate(function() {
+            return document.querySelector('#body').outerHTML;
+          })
+        })
+        .then((html) => {
 
-          const $ = cheerio.load(body);
+          const $ = cheerio.load(html);
 
-          dailyData = $('#body')
+          let dailyData = $('#body')
                         .find('center')
                         .find('table').slice(2,3)
                         .find('tr').slice(1)
@@ -163,6 +176,8 @@ module.exports = {
             .then((output) => {
               console.log('created...', output);
               mongoose.disconnect();
+              _page.close();
+              _ph.exit();
               return output
             })
             .then((output) =>{
@@ -173,9 +188,18 @@ module.exports = {
             .catch((err) => {
               console.log('error', err);
               mongoose.disconnect();
+              _page.close();
+              _ph.exit();
               return err;
             });
-      });
+
+        })
+        .catch((err) => {
+          console.log('error', err);
+          mongoose.disconnect();
+          _page.close();
+          _ph.exit();
+        });
     });
   }
 };
