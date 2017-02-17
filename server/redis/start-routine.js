@@ -14,7 +14,6 @@ module.exports = {
         if (err) {
           console.log('error getting menu information...', err);
         } else {
-          console.log('weeks....', weeks);
           weeks.forEach((week) => {
             client.hsetnx('menu', week.week, week.date_range);
           })
@@ -35,15 +34,14 @@ module.exports = {
         select: 'date top10.title top10.daily_gross top10.theaters top10.avg',
         options: { sort: { date: 1 } }
       })
-      .lean()
       .exec((err, data) => {
         if (err) {
           console.log('error getting latest weekly box office...', err);
         } else {
-          console.time('stringify');
-          client.set('latest', JSON.stringify(data));
-          console.timeEnd('stringify');
+          // client.set('latest', JSON.stringify(data));
+          module.exports.latest = data[0];
         }
       })
-  }
+  },
+  latest: { week: '' }
 }

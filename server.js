@@ -11,7 +11,7 @@ const redis = require('redis');
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-const start = require('./server/redis/start-routine.js')
+const cache = require('./server/redis/start-routine.js')
 
 const config = require('./server/config/config.js');
 const boxOfficeRoutes = require('./server/boxOffice/boxOfficeRoutes.js');
@@ -33,11 +33,12 @@ mongoose.connect(config.db, (err, database) => {
   client.on('connect', function(response) {
     console.log('successfully connected to redis...', response);
   });
-  start.populateMenu(client)
+  cache.populateMenu(client)
     .then(() => {
-      return start.getLatestWeeklyBoxOffice(client);
+      return cache.getLatestWeeklyBoxOffice(client);
     })
     .then(() => {
+      console.log('latest', cache.latest);
       mongoose.disconnect();
       client.quit();
     })

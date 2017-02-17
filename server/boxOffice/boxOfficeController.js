@@ -1,30 +1,42 @@
-// const weeklyData = require('../scraper/weekly-data.json');
-// const dailyData = require('../scraper/daily-data.json');
-const DailyBoxOffice = require('./boxOfficeDailyModel.js');
-const WeeklyBoxOffice = require('./boxOfficeWeeklyModel.js');
+const url = require('url');
 const redis = require('redis');
 const bluebird = require('bluebird');
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-const url = require('url');
+const latestCache = require('../redis/start-routine').latest;
+
+const DailyBoxOffice = require('./boxOfficeDailyModel.js');
+const WeeklyBoxOffice = require('./boxOfficeWeeklyModel.js');
+
 
 module.exports = {
   '/weekly': {
     //should get all available weeks in array to populate selection menu
     get(req, res) {
-      WeeklyBoxOffice
-        .find()
-        .select('week date_range')
-        .limit(52)
-        .exec((err, weeks) => {
-          if (err) {
-            console.log('error in data/boxoffice/weekly...', err);
-            res.status(500).send(err);
-          }
+      const client = redis.createClient();
+
+      client.hgetallAsync('menu')
+        .then((weeks) => {
           res.status(200).send(weeks);
+          client.quit();
         })
+        .catch((err) => {
+          res.status(500).send(err);
+          client.quit();
+        });
+      // WeeklyBoxOffice
+      //   .find()
+      //   .select('week date_range')
+      //   .limit(52)
+      //   .exec((err, weeks) => {
+      //     if (err) {
+      //       console.log('error in data/boxoffice/weekly...', err);
+      //       res.status(500).send(err);
+      //     }
+      //     res.status(200).send(weeks);
+      //   })
 
     }
   },
@@ -33,7 +45,10 @@ module.exports = {
     get(req, res) {
       const week = url.parse(req.url, true).path.slice(8);
 
-      WeeklyBoxOffice
+      if (latestCache.week === week) {
+        res.status(200).send(latestCache);
+      } else {
+        WeeklyBoxOffice
         .find({ week: week })
         .select('-movies.studio -movies.budget -movies.week -movies.prev_rank')
         .populate({
@@ -45,10 +60,16 @@ module.exports = {
           if (err) {
             res.status(500).send(err);
           }
-          // console.log('sending week...', data)
           res.status(200).send(data[0]);
         })
+      }
 
+    }
+  },
+  '/weekly/latest': {
+    get(req, res) {
+      console.log('in /weekly/latest')
+      res.status(200).send(latestCache);
     }
   },
   '/daily/:date': {
