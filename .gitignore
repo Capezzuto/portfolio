@@ -3,3 +3,4 @@
 .env
 /server/scraper/week.json
 cronout.txt
+dump.rdb
