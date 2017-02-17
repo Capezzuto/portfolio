@@ -146,9 +146,9 @@ module.exports = {
                         .find('center')
                         .find('table').slice(2,3)
                         .find('tr').slice(1)
-                        .find('td')
+                        .find('td').slice(0,110)
                         .map(function(i, el) {
-                          if (i < 110) return $(el).text();
+                          return $(el).text();
                         }).get();
 
           const reducerFuncs = {
