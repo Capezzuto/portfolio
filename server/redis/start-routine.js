@@ -2,10 +2,10 @@
 const WeeklyBoxOffice = require('../boxOffice/boxOfficeWeeklyModel.js');
 const weekCount = require('../scraper/week.json');
 
-
 module.exports = {
   //populateMenu must return a promise
   populateMenu: function(client) {
+
     return WeeklyBoxOffice
       .find()
       .select('week date_range')
@@ -20,12 +20,11 @@ module.exports = {
         }
       })
 
-
   },
   getLatestWeeklyBoxOffice: function(client) {
-
     let week = weekCount.week - 1 < 10 ? '0' + (weekCount.week - 1) : String(weekCount.week - 1);
     let weekAndYear = `${weekCount.year}_${week}`;
+
     return WeeklyBoxOffice
       .find({week: weekAndYear})
       .select('-movies.studio -movies.budget -movies.week -movies.prev_rank')
@@ -34,14 +33,14 @@ module.exports = {
         select: 'date top10.title top10.daily_gross top10.theaters top10.avg',
         options: { sort: { date: 1 } }
       })
+      .lean()
       .exec((err, data) => {
         if (err) {
-          console.log('error getting latest weekly box office...', err);
+          console.log('error in setting latest box office....');
         } else {
-          // client.set('latest', JSON.stringify(data));
-          module.exports.latest = data[0];
+          client.set('latest', JSON.stringify(data[0]));
         }
+
       })
-  },
-  latest: { week: '' }
+  }
 }

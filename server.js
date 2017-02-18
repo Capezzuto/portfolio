@@ -35,10 +35,10 @@ mongoose.connect(config.db, (err, database) => {
   });
   cache.populateMenu(client)
     .then(() => {
+      console.log('in cache.populateMenu')
       return cache.getLatestWeeklyBoxOffice(client);
     })
     .then(() => {
-      console.log('latest', cache.latest);
       mongoose.disconnect();
       client.quit();
     })
