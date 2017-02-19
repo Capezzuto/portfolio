@@ -39,7 +39,7 @@ mongoose.connect(config.db, (err, database) => {
       return cache.getLatestWeeklyBoxOffice(client);
     })
     .then(() => {
-      mongoose.disconnect();
+      // mongoose.disconnect();
       client.quit();
     })
 

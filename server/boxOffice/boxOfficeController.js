@@ -31,7 +31,7 @@ module.exports = {
   '/weekly/:week': {
     get(req, res) {
       const week = url.parse(req.url, true).path.slice(8);
-
+      
         WeeklyBoxOffice
           .find({ week: week })
           .select('-movies.studio -movies.budget -movies.week -movies.prev_rank')
