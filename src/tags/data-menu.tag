@@ -62,46 +62,93 @@
       ];
 
       const areaHeading = svg.append('text')
-      .attr('transform', `translate(${margin.left}, ${headingHeight})`)
-      .attr('class', 'boxoffice-heading')
-      .text('Daily sales for top five movies');
-
-      const pieHeading = svg.append('text')
-      .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
-      .attr('class', 'boxoffice-heading')
-      .attr('text-anchor', 'end')
-      .text('Total sales for week, top five movies');
-
-      const barHeading = svg.append('text')
-      .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
-      .attr('class', 'boxoffice-heading')
-      .attr('text-anchor', 'end')
-      .text('Daily per theater average, top five movies');
+                              .attr('transform', `translate(${margin.left}, ${headingHeight})`)
+                              .attr('class', 'boxoffice-heading')
+                              .text('Daily sales for top five movies');
 
       const areaChartGroup = svg.append('g')
-      .attr('id', 'area-chart')
-      .attr('transform', `translate(${margin.left}, ${margin.top + headingHeight})`);
+                                  .attr('id', 'area-chart')
+                                  .attr('transform', `translate(${margin.left}, ${margin.top + headingHeight})`);
+
+      const areaXScale = d3.scaleTime()
+                            .range([0, areaWidth]);
+
+      let areaXAxis = d3.axisBottom(areaXScale).ticks(7);
+
+      const areaYScale = d3.scaleLinear()
+                            .domain([0, 12000000])
+                            .range([areaHeight, 0]);
+
+      let areaYAxis = d3.axisLeft(areaYScale).tickFormat(d3.format('$,.2s'));
+
+      areaChartGroup.append('g')
+                      .attr('class', 'x axis')
+                      .attr('transform', `translate(0, ${areaHeight})`)
+                      .call(areaXAxis);
+
+      areaChartGroup.append('g')
+                      .attr('class', 'y axis')
+                      .call(areaYAxis);
 
       const legend = svg.append('g')
-      .attr('id', 'legend')
-      .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
+                          .attr('id', 'legend')
+                          .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
+
+      const pieHeading = svg.append('text')
+                              .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
+                              .attr('class', 'boxoffice-heading')
+                              .attr('text-anchor', 'end')
+                              .text('Total sales for week, top five movies');
 
       const pieChartGroup = svg.append('g')
-      .attr('id', 'pie-chart')
-      .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 +(2 * margin.top) + margin.bottom})`);
+                                .attr('id', 'pie-chart')
+                                .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 + (2 * margin.top) + margin.bottom})`);
+
+      const barHeading = svg.append('text')
+                              .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
+                              .attr('class', 'boxoffice-heading')
+                              .attr('text-anchor', 'end')
+                              .text('Daily per theater average, top five movies');
 
       const barChartGroup = svg.append('g')
-      .attr('id', 'bar-chart')
-      .attr('transform', `translate(${margin.left}, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
+                                .attr('id', 'bar-chart')
+                                .attr('transform', `translate(${margin.left}, ${areaHeight + pieHeight + 2 * (margin.top + margin.bottom)})`);
 
       const barLegend = svg.append('g')
-      .attr('id', 'bar-legend')
-      .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top - 30})`);
+                            .attr('id', 'bar-legend')
+                            .attr('transform', `translate(${barWidth}, ${fullHeight - margin.bottom - barHeight - margin.top - 30})`);
 
+
+      const barX0Scale = d3.scaleBand()
+                            .rangeRound([0, barWidth])
+                            .paddingInner(0.1)
+                            // .domain(dailyData.map(d => parseTime(d.date)))
+
+      const barX1Scale = d3.scaleBand()
+                            .padding(0.05)
+                            // .domain(top5Keys)
+                            .rangeRound([0, barX0Scale.bandwidth()])
+
+      let barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
+
+      const barYScale = d3.scaleLinear()
+                          // .domain([0, d3.max(dailyData, day => d3.max(day.top5, movie => movie.avg)) * 1.1])
+                          .range([barHeight, 0]);
+
+      let barYAxis = d3.axisLeft(barYScale).tickFormat(d3.format('$,.2s'))
+
+      barChartGroup.append('g')
+                    .attr('class', 'barXAxis')
+                    .attr('transform', `translate(0, ${barHeight})`)
+                    .call(barXAxis);
+
+      barChartGroup.append('g')
+                    .attr('class', 'barYAxis')
+                    .call(barYAxis);
 
       axios.get('/data/boxoffice/latest')
         .then((response) => {
-          buildInitialCharts(response.data);
+          updateCharts(response.data);
         })
         .catch((err) => {
           console.log(err);
@@ -121,7 +168,7 @@
         });
 
 
-      function buildInitialCharts(data) {
+      function updateCharts(data) {
         tag.dateRange = data.date_range;
         tag.update();
         /* ----------------------------- clean data ----------------------------- */
@@ -146,27 +193,24 @@
 
         // console.log(top5);
       /* ------------------------------ axis data ------------------------------ */
-        const areaXScale = d3.scaleTime()
-                    .domain([
-                      d3.min(data.days, day => parseTime(day.date)),
-                      d3.max(data.days, day => parseTime(day.date))
-                    ])
-                    .range([0, areaWidth]);
+      areaXScale.domain([
+                  d3.min(data.days, day => parseTime(day.date)),
+                  d3.max(data.days, day => parseTime(day.date))
+                ])
+                .range([0, areaWidth]);
 
-        const areaXAxis = d3.axisBottom(areaXScale).ticks(7);
+      const areaXAxis = d3.axisBottom(areaXScale).ticks(7);
 
-        const areaYScale = d3.scaleLinear()
-                    .domain([0, d3.max(data.days, day => day.top10[0].daily_gross) * 1.2])
-                    .range([areaHeight, 0]);
+      const areaYScale = d3.scaleLinear()
+                  .domain([0, d3.max(data.days, day => day.top10[0].daily_gross) * 1.2])
+                  .range([areaHeight, 0]);
 
-        const areaYAxis = d3.axisLeft(areaYScale).tickFormat(d3.format('$,.2s'));
+      const areaYAxis = d3.axisLeft(areaYScale).tickFormat(d3.format('$,.2s'))
 
-        areaChartGroup.append('g')
-                    .attr('class', 'axis')
-                    .attr('transform', `translate(0, ${areaHeight})`)
+      areaChartGroup.select('.x.axis')
                     .call(areaXAxis);
-        areaChartGroup.append('g')
-                    .attr('class', 'axis')
+
+      areaChartGroup.select('.y.axis')
                     .call(areaYAxis);
 
         /* ------------------------------ area data ------------------------------ */
@@ -522,7 +566,7 @@
                                              theaters: 0,
                                              title: key
                                            };
-                   })
+                    })
                  };
         });
 
@@ -536,21 +580,18 @@
                               .domain(top5Keys)
                               .rangeRound([0, barX0Scale.bandwidth()])
 
-        const barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
+        let barXAxis = d3.axisBottom(barX0Scale).tickFormat(getDay)
 
         const barYScale = d3.scaleLinear()
                             .domain([0, d3.max(dailyData, day => d3.max(day.top5, movie => movie.avg)) * 1.1])
                             .range([barHeight, 0]);
 
-        const barYAxis = d3.axisLeft(barYScale).tickFormat(d3.format('$,.2s'))
+        let barYAxis = d3.axisLeft(barYScale).tickFormat(d3.format('$,.2s'))
 
-        barChartGroup.append('g')
-                      .attr('class', 'barXAxis')
-                      .attr('transform', `translate(0, ${barHeight})`)
+        barChartGroup.select('.barXAxis')
                       .call(barXAxis);
 
-        barChartGroup.append('g')
-                      .attr('class', 'barYAxis')
+        barChartGroup.select('.barYAxis')
                       .call(barYAxis);
 
         let barUpdate = barChartGroup.selectAll('.bargroup').data(dailyData);
