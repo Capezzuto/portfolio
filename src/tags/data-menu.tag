@@ -5,6 +5,7 @@
   <div class="container">
     <h3>U.S. Box Office, Top Five Movies for the Week of {dateRange}</h3>
     <select onchange={selectAndUpdateGraph}>
+      <option value={null} selected>Choose a week</option>
       <option each={week, i in menuOptions} value={week[0]}>{week[1]}</option>
     </select>
   </div>
@@ -38,10 +39,20 @@
   const fullWidth = areaWidth + margin.right + margin.left;
   const fullHeight = areaHeight + pieHeight + barHeight + headingHeight + 3 * (margin.top + margin.bottom);
 
+  const colorScheme = [
+    'rgb(0, 154, 212)',
+    'rgb(236, 0, 140)',
+    'rgb(240, 230, 0)',
+    'rgb(170, 205, 255)',
+    'rgb(250, 170, 170)',
+    'rgb(60, 174, 239)',
+    'rgb(255, 242, 0)'
+  ];
+
   let selectedWeek = '';
   tag.dateRange = ''; //eventually will be selected by user
   tag.menuOptions = [];
-  tag.selectAndUpdateGraph = function() {};
+  // tag.selectAndUpdateGraph = function() {};
 
     tag.on('mount', function() {
 
@@ -51,15 +62,7 @@
       .attr('width', fullWidth)
       .call(responsivefy);
 
-      const colorScheme = [
-        'rgb(0, 154, 212)',
-        'rgb(236, 0, 140)',
-        'rgb(240, 230, 0)',
-        'rgb(170, 205, 255)',
-        'rgb(250, 170, 170)',
-        'rgb(60, 174, 239)',
-        'rgb(255, 242, 0)'
-      ];
+      /* -------------------- set up area chart groups and axes -------------------- */
 
       const areaHeading = svg.append('text')
                               .attr('transform', `translate(${margin.left}, ${headingHeight})`)
@@ -94,6 +97,8 @@
                           .attr('id', 'legend')
                           .attr('transform', `translate(${areaWidth}, ${margin.top + headingHeight})`);
 
+      /* -------------------- set up pie chart groups and axes -------------------- */
+
       const pieHeading = svg.append('text')
                               .attr('transform', `translate(${fullWidth - 2 * margin.right}, ${areaHeight + 2 * (headingHeight + margin.top + margin.bottom)})`)
                               .attr('class', 'boxoffice-heading')
@@ -103,6 +108,8 @@
       const pieChartGroup = svg.append('g')
                                 .attr('id', 'pie-chart')
                                 .attr('transform', `translate(${pieWidth / 2 + 2 * margin.left}, ${areaHeight + pieHeight / 2 + (2 * margin.top) + margin.bottom})`);
+
+      /* -------------------- set up bar chart groups and axes -------------------- */
 
       const barHeading = svg.append('text')
                               .attr('transform', `translate(${fullWidth - margin.right}, ${fullHeight - barHeight - 2 * margin.bottom - margin.top})`)
@@ -146,6 +153,8 @@
                     .attr('class', 'barYAxis')
                     .call(barYAxis);
 
+      /* ------------------------ initial ajax requests ------------------------ */
+
       axios.get('/data/boxoffice/latest')
         .then((response) => {
           updateCharts(response.data);
@@ -171,7 +180,9 @@
       function updateCharts(data) {
         tag.dateRange = data.date_range;
         tag.update();
-        /* ----------------------------- clean data ----------------------------- */
+
+        /* --------------------- clean data --------------------- */
+
         let top5 = [];
         for (let i = 0; i < 5; i++) {
           let { title, total } = data.movies[i];
@@ -219,7 +230,11 @@
                         .y0(areaYScale(0))
                         .y1(d => areaYScale(d.gross));
 
-        let areaUpdate = areaChartGroup.selectAll('.area').data(top5);
+        let areaUpdate = areaChartGroup
+                          .selectAll('.area')
+                          .data(top5, d => d.total);
+
+        areaUpdate.exit().remove();
 
         areaUpdate.enter()
                     .append('path')
@@ -275,13 +290,22 @@
                           .attr('opacity', 0.5);
                       });
 
+
         /* ------------------------- scatterplot data ------------------------- */
 
-        let pointsUpdate = areaUpdate.enter()
-                                      .append('g')
-                                        .attr('class', 'points')
-                                        .selectAll('circle')
-                                        .data(d => d.values);
+        let pointsGroupUpdate = areaChartGroup
+                                  .selectAll('.points')
+                                  .data(top5, d => d.total);
+
+        let pointsUpdate = pointsGroupUpdate.enter()
+                            .append('g')
+                              .attr('class', 'points')
+                              .selectAll('circle')
+                              .data(d => d.values, d => d.gross);
+
+        pointsGroupUpdate.exit().remove();
+        pointsUpdate.exit().remove();
+
         let point = pointsUpdate.enter()
                       .append('circle')
                         .attr('r', 3)
@@ -373,17 +397,20 @@
                 if (d3.select('#tooltip').nodes().length) {
                   d3.selectAll('#tooltip').remove()
                 }
-              })
+              });
 
 
         /* ---------------------------- legend data ---------------------------- */
 
-        let legendEntry = legend.selectAll('.legend-entry')
-                                  .data(top5)
-                                  .enter()
-                                  .append('g')
-                                    .attr('class', 'legend-entry')
-                                    .attr('opacity', 0.5);
+        let legendUpdate = legend.selectAll('.legend-entry')
+                                  .data(top5, d => d.total);
+
+        legendUpdate.exit().remove();
+
+        let legendEntry = legendUpdate.enter()
+                                            .append('g')
+                                              .attr('class', 'legend-entry')
+                                              .attr('opacity', 0.5);
 
         legendEntry.on('mouseover', function(d, i) {
                       let title = d.title;
@@ -448,6 +475,7 @@
         /* ---------------------------- circle data ---------------------------- */
         const radius = pieWidth / 2;
         let top5week = [];
+
         for (let i = 0; i < 5; i++) {
           top5week.push({
             title: data.movies[i].title,
@@ -465,7 +493,6 @@
           week_gross: data.total_gross - totalOfFive,
           pct: (((data.total_gross - totalOfFive)/ data.total_gross) * 100).toFixed(2)
         });
-        // console.log('top5week', top5week)
 
         const arc = d3.arc()
                       .innerRadius(radius - 90)
@@ -475,77 +502,82 @@
                             .innerRadius(radius - 60)
                             .outerRadius(radius - 40);
 
-        const pie = d3.pie().sort(null).value(d => d.week_gross);
+        let pie = d3.pie().sort(null).value(d => d.week_gross);
 
         let pieUpdate = pieChartGroup
                           .selectAll('.pie')
-                          .data(pie(top5week))
+                          .data(pie(top5week), d => d.data.week_gross)
 
-        pieUpdate.enter()
-                  .append('path')
-                    .attr('d', arc)
-                    .style('fill', (d, i) => colorScheme[i])
+        pieUpdate.exit().remove();
+
+        let pieEnter = pieUpdate.enter()
+                                  .append('g')
+                                    .attr('class', 'pie');
+
+        pieEnter.append('path')
+                  .attr('d', arc)
+                  .style('fill', (d, i) => colorScheme[i])
+                  .style('fill-opacity', 0.5)
+                  .on('mouseover', function(d, i) {
+                    const pietip = pieChartGroup
+                                      .append('g')
+                                      .attr('id', 'pietip');
+
+                    pietip.append('path')
+                            .attr('d', `M${labelArc.centroid(d)[0]} ${labelArc.centroid(d)[1] - 10} l 70 -40 l 200 0`)
+                            .style('fill', 'none')
+                            .style('stroke', '#000000')
+                            .style('stroke-opacity', '0.5');
+
+                    pietip.append('text')
+                            .attr('dx', labelArc.centroid(d)[0] + 75)
+                            .attr('dy', labelArc.centroid(d)[1] - 53)
+                            .attr('class', 'pietip-pct')
+                            .text(`%${d.data.pct} of total weekly box office`);
+
+                    pietip.append('text')
+                            .attr('class', 'pietip-gross')
+                            .attr('dx', labelArc.centroid(d)[0] + 75)
+                            .attr('dy', labelArc.centroid(d)[1] - 70)
+                            .text(`$${d.data.week_gross.toLocaleString()}`);
+
+                    pietip.append('text')
+                                .attr('class', 'pietip-title')
+                                .attr('dx', labelArc.centroid(d)[0] + 75)
+                                .attr('dy', labelArc.centroid(d)[1] - 90)
+                                .text(d.data.title);
+
+
+                    d3.select(this)
+                      .transition(tIn)
+                      .style('transform', 'scale(1.1)')
+                      .style('fill-opacity', 1);
+                  })
+                  .on('mouseout', function(d, i) {
+
+                    d3.select(this)
+                      .transition(tOut)
+                      .style('transform', 'scale(1)')
+                      .style('fill-opacity', 0.5)
+
+                    if (d3.select('#pietip').nodes().length) {
+                      pieChartGroup.select('#pietip').remove()
+                    }
+                  })
+
+
+          pieEnter.append('text')
                     .style('fill-opacity', 0.5)
-                    .on('mouseover', function(d, i) {
-                      const pietip = pieChartGroup
-                                        .append('g')
-                                        .attr('id', 'pietip');
-
-                      pietip.append('path')
-                              .attr('d', `M${labelArc.centroid(d)[0]} ${labelArc.centroid(d)[1] - 10} l 70 -40 l 200 0`)
-                              .style('fill', 'none')
-                              .style('stroke', '#000000')
-                              .style('stroke-opacity', '0.5');
-
-                      pietip.append('text')
-                              .attr('dx', labelArc.centroid(d)[0] + 75)
-                              .attr('dy', labelArc.centroid(d)[1] - 53)
-                              .attr('class', 'pietip-pct')
-                              .text(`%${d.data.pct} of total weekly box office`);
-
-                      pietip.append('text')
-                              .attr('class', 'pietip-gross')
-                              .attr('dx', labelArc.centroid(d)[0] + 75)
-                              .attr('dy', labelArc.centroid(d)[1] - 70)
-                              .text(`$${d.data.week_gross.toLocaleString()}`);
-
-                      pietip.append('text')
-                                  .attr('class', 'pietip-title')
-                                  .attr('dx', labelArc.centroid(d)[0] + 75)
-                                  .attr('dy', labelArc.centroid(d)[1] - 90)
-                                  .text(d.data.title);
-
-
-                      d3.select(this)
-                        .transition(tIn)
-                        .style('transform', 'scale(1.1)')
-                        .style('fill-opacity', 1);
-                    })
-                    .on('mouseout', function(d, i) {
-
-                      d3.select(this)
-                        .transition(tOut)
-                        .style('transform', 'scale(1)')
-                        .style('fill-opacity', 0.5)
-
-                      if (d3.select('#pietip').nodes().length) {
-                        pieChartGroup.select('#pietip').remove()
-                      }
-                    })
-
-        pieUpdate.enter()
-                  .append('text')
                     .attr('transform', d => `translate(${labelArc.centroid(d)})`)
                     .attr('dx', -20)
                     .attr('dy', '0.6em')
                     .attr('pointer-events', 'none')
-                    .style('fill-opacity', 0.5)
                     .text(d => {
                       if (d.data.title.length > 15) {
                         return d.data.title.slice(0, 11) + '...'
                       }
                       return d.data.title
-                    })
+                    });
 
         /* ------------------------------ bar graph ------------------------------ */
 
@@ -594,25 +626,30 @@
         barChartGroup.select('.barYAxis')
                       .call(barYAxis);
 
-        let barUpdate = barChartGroup.selectAll('.bargroup').data(dailyData);
+        let barGroupUpdate = barChartGroup.selectAll('.bargroup').data(dailyData, d => d.date.toString());
 
-        let bargroups = barUpdate.enter()
-                      .append('g')
-                        .attr('class', 'bargroup')
-                        .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`)
-                        .attr('data-transform', d => barX0Scale(parseTime(d.date)));
+        let barGroup = barGroupUpdate.enter()
+                        .append('g')
+                          .attr('class', 'bargroup')
+                          .attr('transform', d => `translate(${barX0Scale(parseTime(d.date))}, 0)`)
+                          .attr('data-transform', d => barX0Scale(parseTime(d.date)));
 
-        let bar = bargroups.selectAll('.bar')
-                  .data(d => d.top5)
-                  .enter()
-                  .append('rect')
-                    .attr('class', (d, i) => `bar bar-${i}`)
-                    .attr('x', d => barX1Scale(d.title))
-                    .attr('y', d => barYScale(d.avg))
-                    .attr('width', barX1Scale.bandwidth())
-                    .attr('height', d => barHeight - barYScale(d.avg))
-                    .attr('fill', (d, i) => colorScheme[i])
-                    .attr('fill-opacity', 0.5);
+        let barUpdate = barGroup
+                          .selectAll('.bar')
+                          .data(d => d.top5, d => d.title);
+
+        barGroupUpdate.exit().remove();
+        barUpdate.exit().remove();
+
+        let bar = barUpdate.enter()
+                    .append('rect')
+                      .attr('class', (d, i) => `bar bar-${i}`)
+                      .attr('x', d => barX1Scale(d.title))
+                      .attr('y', d => barYScale(d.avg))
+                      .attr('width', barX1Scale.bandwidth())
+                      .attr('height', d => barHeight - barYScale(d.avg))
+                      .attr('fill', (d, i) => colorScheme[i])
+                      .attr('fill-opacity', 0.5);
 
         bar.on('mouseover', function(d, i) {
 
@@ -667,26 +704,30 @@
 
         /* ---------------------------- bar chart legend ---------------------------- */
 
-        let barLegendEntry = barLegend.selectAll('.legend-entry')
-                                      .data(top5Keys)
-                                      .enter()
+        let barLegendUpdate = barLegend
+                                .selectAll('.legend-entry')
+                                .data(top5Keys, d => d + Math.random());
+
+        barLegendUpdate.exit().remove();
+
+        let barLegendEntry = barLegendUpdate.enter()
                                       .append('g')
                                         .attr('class', 'legend-entry');
 
         barLegendEntry.append('rect')
-                        .attr('fill', (d,i) => colorScheme[i])
-                        .attr('fill-opacity', 0.5)
-                        .attr('width', 30)
-                        .attr('height', 18)
-                        .attr('x', 30)
-                        .attr('y', (d, i) => i * 30);
+                              .attr('fill', (d,i) => colorScheme[i])
+                              .attr('fill-opacity', 0.5)
+                              .attr('width', 30)
+                              .attr('height', 18)
+                              .attr('x', 30)
+                              .attr('y', (d, i) => i * 30);
 
         barLegendEntry.append('text')
-                        .attr('fill', (d, i) => colorScheme[i])
-                        .attr('text-anchor', 'end')
-                        .attr('x', 10)
-                        .attr('y', (d, i) => i * 30 + 15)
-                        .text(d => d);
+                              .attr('fill', (d, i) => colorScheme[i])
+                              .attr('text-anchor', 'end')
+                              .attr('x', 10)
+                              .attr('y', (d, i) => i * 30 + 15)
+                              .text(d => d);
 
         barLegendEntry.on('mouseover', function(d, i) {
           console.log('this', this);
@@ -716,7 +757,6 @@
       }
 
       tag.selectAndUpdateGraph = function(e) {
-        console.log(e.target.value);
         axios.get(`/data/boxoffice/weekly/${e.target.value}`)
           .then((response) => {
             updateCharts(response.data);
