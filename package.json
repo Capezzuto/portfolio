@@ -4,10 +4,11 @@
   "description": "Portfolio site for Joseph Capezzuto",
   "main": "index.js",
   "scripts": {
-    "dev-start": "NODE_ENV=development nodemon server.js",
     "build": "webpack -p",
+    "dev-start": "NODE_ENV=development nodemon server.js",
     "prod-start": "npm run build && NODE_ENV=production node server.js",
-    "scrape": "NODE_ENV=production node server/scraper/scrape-bom-mongo.js"
+    "dev-scrape": "NODE_ENV=development node server/scraper/scraper.js",
+    "scrape": "NODE_ENV=production node server/scraper/scraper.js"
   },
   "keywords": [
     "riot.js",

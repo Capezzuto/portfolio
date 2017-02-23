@@ -759,6 +759,7 @@
       tag.selectAndUpdateGraph = function(e) {
         axios.get(`/data/boxoffice/weekly/${e.target.value}`)
           .then((response) => {
+            console.log(response.data);
             updateCharts(response.data);
           })
           .catch((err) => {
