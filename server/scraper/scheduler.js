@@ -10,6 +10,7 @@ const redis = require('redis');
 const getDailyData = require('./scrape-bom-daily.js');
 const getWeeklyData = require('./scrape-bom-weekly.js');
 const weekCount = require('./week.json');
+const cache = require('../redis/start-routine.js');
 
 let yesterday = moment().subtract(1, 'days'); // start with yesterday's date
 let date = yesterday.format('YYYY-MM-DD'); // get formatted date for query
@@ -41,7 +42,16 @@ mongoose.connect(config.db)
           fs.writeFile('week.json', json, 'utf8'); // write new weekCount data
         })
         .then(function() {
-          console.log('TODO: update redis')
+          const client = redis.createClient();
+          client.on('error', function(err) {
+            console.log('Error in connecting to redis', err);
+          });
+          client.on('connect', function(response) {
+            console.log('successfully connected to redis...', response);
+          });
+          return cache.populateMenu(client)
+            .then(() => cache.getLatestWeeklyBoxOffice(client))
+            .then(() => client.quit());
         });
     }
     return;
