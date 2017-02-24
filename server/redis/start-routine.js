@@ -5,7 +5,6 @@ const weekCount = require('../scraper/week.json');
 module.exports = {
   //populateMenu must return a promise
   populateMenu: function(client) {
-    console.log('populating menu....');
     return WeeklyBoxOffice
       .find()
       .select('week date_range')
@@ -25,7 +24,6 @@ module.exports = {
   getLatestWeeklyBoxOffice: function(client) {
     let week = weekCount.week - 1 < 10 ? '0' + (weekCount.week - 1) : String(weekCount.week - 1);
     let weekAndYear = `${weekCount.year}_${week}`;
-    console.log('getting latest results...');
 
     return WeeklyBoxOffice
       .find({week: weekAndYear})

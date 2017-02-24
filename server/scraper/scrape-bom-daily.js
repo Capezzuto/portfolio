@@ -12,45 +12,32 @@ const args = process.argv.slice(2);
 module.exports = function getDailyData(arg, db) {
   let _ph, _page;
   const bomURL = `http://www.boxofficemojo.com/daily/chart/?sortdate=${arg.date}&view=1day&p=.htm`;
-  console.log('in daily data......$$$$$$$$$$$$$$$$$')
-  console.log('readyState', mongoose.connection.readyState);
-  // return mongoose.connect(config.db)
-  //   .then((connection) => {
-  //     console.log()
-      return phantom.create()
-    // })
+
+  return phantom.create()
     .then((ph) => {
       _ph = ph;
-      console.log('1.1 assigned _ph', typeof _ph)
       return _ph.createPage();
     })
     .then((page) => {
       _page = page;
-      console.log('1.2 assigned _page', typeof _page)
       return _page.open(bomURL);
     })
     .then((status) => {
-      console.log('1.3 about to evaluate _page...')
       return _page.evaluate(function() {
         return document.querySelector('#body').outerHTML;
       })
     })
-    .then((html) => {
-      return buildDailyEntry(html, arg)
-    })
+    .then((html) => buildDailyEntry(html, arg))
     .then((output) => _page.close())
     .then(() => _ph.exit())
-    // .then(() => mongoose.connection.close())
     .catch((err) => {
       console.log(err);
       return _page.close()
         .then(() => _ph.exit())
-        // .then(() => mongoose.connection.close())
     });
 };
 
 function buildDailyEntry(html, arg) {
-  console.log('in buildDailyEntry....');
   const $ = cheerio.load(html);
 
   let dailyData = $('#body')
@@ -82,8 +69,6 @@ function buildDailyEntry(html, arg) {
     reducerFuncs[x](obj, curr, entry);
     return obj;
   }, { date: arg.date, week: `${arg.year}_${arg.week}`, top10: [] });
-  console.log('jsonData', jsonData)
+
   return BoxOfficeDaily.create(jsonData)
 }
-
-//module.exports({ year: args[1], week: args[2], date: args[3] });

@@ -20,10 +20,11 @@ const PORT = config.port;
 const options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
 
-let db, client;
+let client;
 mongoose.connect(config.db, (err, database) => {
+
   if(err) console.log('unable to connect to mongo,', err);
-  db = database;
+
   console.log(`connected to db at ${config.db}`);
 
   client = redis.createClient();
@@ -34,15 +35,8 @@ mongoose.connect(config.db, (err, database) => {
     console.log('successfully connected to redis...', response);
   });
   cache.populateMenu(client)
-    .then(() => {
-      console.log('in cache.populateMenu')
-      return cache.getLatestWeeklyBoxOffice(client);
-    })
-    .then(() => {
-      // mongoose.disconnect();
-      client.quit();
-    })
-
+    .then(() => cache.getLatestWeeklyBoxOffice(client))
+    .then(() => client.quit())
 
 })
 

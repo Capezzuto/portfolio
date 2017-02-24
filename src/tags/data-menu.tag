@@ -52,7 +52,6 @@
   let selectedWeek = '';
   tag.dateRange = ''; //eventually will be selected by user
   tag.menuOptions = [];
-  // tag.selectAndUpdateGraph = function() {};
 
     tag.on('mount', function() {
 
@@ -730,8 +729,6 @@
                               .text(d => d);
 
         barLegendEntry.on('mouseover', function(d, i) {
-          console.log('this', this);
-          console.log('d', d);
           d3.select(this.parentNode.previousSibling)
              .selectAll(`.bar-${i}`)
              .transition(tIn)
@@ -759,7 +756,6 @@
       tag.selectAndUpdateGraph = function(e) {
         axios.get(`/data/boxoffice/weekly/${e.target.value}`)
           .then((response) => {
-            console.log(response.data);
             updateCharts(response.data);
           })
           .catch((err) => {

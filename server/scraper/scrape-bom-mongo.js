@@ -13,10 +13,8 @@ module.exports = {
   getWeeklyData: function(arg) {
     let _ph, _page;
     const bomURL = `http://www.boxofficemojo.com/weekly/chart/?yr=${arg.year}&wk=${arg.week}&p=.htm`;
-    console.log('0.i in getWeeklyData....')
     mongoose.connect(config.db);
     const db = mongoose.connection;
-    console.log('0.ii connected to mongoose...');
     return new Promise((resolve, reject) => {
 
       db.on('error', () => {
@@ -24,27 +22,21 @@ module.exports = {
         reject();
       });
       db.on('open', () => {
-        console.log('I.i about to create phantom instance....', bomURL)
         phantom.create()
           .then((ph) => {
           _ph = ph;
-          console.log('I.ii assigning _ph...', typeof _ph)
           return _ph.createPage();
           })
           .then((page) => {
             _page = page;
-            console.log('I.iii assigning _page...', typeof _page)
             return _page.open(bomURL);
           })
           .then((status) => {
-            console.log('I.iv status....', status);
             return _page.evaluate(function() {
               return document.querySelector('#body').outerHTML;
             })
           })
           .then((html) => {
-
-            console.log('II.i getting html..');
 
             const $ = cheerio.load(html);
 
@@ -95,7 +87,6 @@ module.exports = {
 
             BoxOfficeWeekly.create(jsonData)
               .then((output) => {
-                console.log('III.i creating weekly entry...', output);
                 BoxOfficeDaily
                   .find({ week })
                   .select('_id')
@@ -150,26 +141,21 @@ module.exports = {
     return new Promise((resolve, reject) => {
       db.on('error', console.error.bind(console, 'Error opening connection'));
       db.on('open', () => {
-        console.log('1 starting phantom...', bomURL);
         phantom.create()
           .then((ph) => {
             _ph = ph;
-            console.log('1.1 assigned _ph', typeof _ph)
             return _ph.createPage();
           })
           .then((page) => {
             _page = page;
-            console.log('1.2 assigned _page', typeof _page)
             return _page.open(bomURL);
           })
           .then((status) => {
-            console.log('1.3 about to evaluate _page...')
             return _page.evaluate(function() {
               return document.querySelector('#body').outerHTML;
             })
           })
           .then((html) => {
-            console.log('2 getting html...');
 
             const $ = cheerio.load(html);
 
@@ -205,14 +191,11 @@ module.exports = {
 
             return BoxOfficeDaily.create(jsonData)
               .then((output) => {
-                console.log('3 creating daily data entry...')
                 _page.close()
                 .then(() => {
-                  console.log('3.1 _page closed, now exiting...');
                   return _ph.exit();
                 })
                 .then(() => {
-                  console.log('3.2 closing mongoose connection...');
                   db.close(() => {
                     resolve(output);
                   });

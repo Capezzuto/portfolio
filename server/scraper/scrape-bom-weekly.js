@@ -13,32 +13,23 @@ const args = process.argv.slice(2);
 module.exports = function getWeeklyData(arg, db) {
   let _ph, _page;
   const bomURL = `http://www.boxofficemojo.com/weekly/chart/?yr=${arg.year}&wk=${arg.week}&p=.htm`;
-  console.log('0.i in getWeeklyData....&&&&&&&&&&&&&&&&')
-
-  console.log('readyState', mongoose.connection.readyState);
 
   return phantom.create()
     .then((ph) => {
       _ph = ph;
-      console.log('I.ii assigning _ph...', typeof _ph)
       return _ph.createPage();
     })
     .then((page) => {
       _page = page;
-      console.log('I.iii assigning _page...', typeof _page)
       return _page.open(bomURL);
     })
     .then((status) => {
-      console.log('I.iv status....', status);
       return _page.evaluate(function() {
         return document.querySelector('#body').outerHTML;
       })
     })
     .then((html) => buildWeeklyEntry(html, arg))
-    .then(() => {
-      console.log('proceeding...');
-      return _page.close()
-    })
+    .then(() => _page.close())
     .then(() => _ph.exit())
     .catch((err) => {
       console.log(err);
@@ -49,7 +40,6 @@ module.exports = function getWeeklyData(arg, db) {
 };
 
 function buildWeeklyEntry(html, arg) {
-  console.log('in buildWeeklyEntry.....')
   const $ = cheerio.load(html);
 
   let weeklyData = $('#body')
@@ -100,20 +90,16 @@ function buildWeeklyEntry(html, arg) {
 
   return BoxOfficeWeekly.create(jsonData, function() { console.log('created'); })
     .then((output) => {
-      console.log('III.i creating weekly entry...', output);
       return BoxOfficeDaily
             .find({ week: output.week })
             .select('_id')
             .exec((err, days) => {
               if (err)  return err;
               output.days = days;
-              console.log('III.ii updating weekly entry...')
               output.save((err, updatedDoc) => {
                 if (err) return err;
-                console.log('-----------------> updatedDoc');
+                return updatedDoc;
               });
             });
       });
 }
-
-//module.exports({ year: args[1], week: args[2] });

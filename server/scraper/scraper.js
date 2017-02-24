@@ -1,3 +1,6 @@
+require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env'});
+const config = require('../config/config.js');
+
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 

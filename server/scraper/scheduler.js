@@ -36,8 +36,7 @@ mongoose.connect(config.db)
               weekCount.year++; // and we increment the year
             }
           }
-          console.log('pretending to increment weekCount.week');
-          //weekCount.week++;  // either way, increment the week TODO: uncomment this line
+          weekCount.week++;  // either way, increment the week TODO: uncomment this line
           let json = JSON.stringify(weekCount);
           fs.writeFile('week.json', json, 'utf8'); // write new weekCount data
         })
@@ -52,6 +51,10 @@ mongoose.connect(config.db)
           return cache.populateMenu(client)
             .then(() => cache.getLatestWeeklyBoxOffice(client))
             .then(() => client.quit());
+        })
+        .catch((err) => {
+          console.log(err);
+          return err;
         });
     }
     return;
