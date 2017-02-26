@@ -38,7 +38,7 @@ mongoose.connect(config.db)
           }
           weekCount.week++;  // either way, increment the week TODO: uncomment this line
           let json = JSON.stringify(weekCount);
-          fs.writeFile('week.json', json, 'utf8'); // write new weekCount data
+          fs.writeFile(__dirname + '/week.json', json, 'utf8'); // write new weekCount data
         })
         .then(function() {
           const client = redis.createClient();
