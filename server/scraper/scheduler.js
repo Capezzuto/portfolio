@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '/Users/capezzuto/portfolio/.env'});
+require('dotenv').config({ path: '/home/capezzuto/portfolio/.env'});
 const config = require('../config/config.js');
 
 const moment = require('moment');
