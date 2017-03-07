@@ -43,9 +43,8 @@ function buildDailyEntry(html, arg) {
   .find('table').slice(2,3)
   .find('tr').slice(1)
   .find('td').slice(0,110)
-  .map(function(i, el) {
-    return $(el).text();
-  }).get();
+  .map((i, el) => $(el).text())
+  .get();
 
   const reducerFuncs = {
     0: function(obj, curr, entry) { obj.top10[entry] = { rank_today: Number(curr) }; },

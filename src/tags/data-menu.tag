@@ -179,6 +179,7 @@
       function updateCharts(data) {
         tag.dateRange = data.date_range;
         tag.update();
+        console.log('data ===', data);
 
         /* --------------------- clean data --------------------- */
 

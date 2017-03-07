@@ -24,6 +24,7 @@ module.exports = {
   getLatestWeeklyBoxOffice: function(client) {
     let week = weekCount.week - 1 < 10 ? '0' + (weekCount.week - 1) : String(weekCount.week - 1);
     let weekAndYear = `${weekCount.year}_${week}`;
+    client.hgetallAsync('menu').then(weeks => console.log('weeks', weeks));
 
     return WeeklyBoxOffice
       .find({week: weekAndYear})
