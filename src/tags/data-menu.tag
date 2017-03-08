@@ -61,6 +61,8 @@
       .attr('width', fullWidth)
       .call(responsivefy);
 
+      const t = d3.transition().duration(500);
+
       /* -------------------- set up area chart groups and axes -------------------- */
 
       const areaHeading = svg.append('text')
@@ -179,7 +181,7 @@
       function updateCharts(data) {
         tag.dateRange = data.date_range;
         tag.update();
-        console.log('data ===', data);
+        // console.log('data ===', data);
 
         /* --------------------- clean data --------------------- */
 
@@ -197,12 +199,13 @@
                   date: parseTime(day.date),
                   gross: movie ? movie.daily_gross : 0
                 };
-               })
+              }),
+              clearValues: data.days.map(day => ({ date: parseTime(day.date), gross: 0 }))
             }
           );
         }
 
-        // console.log(top5);
+        console.log(top5);
       /* ------------------------------ axis data ------------------------------ */
       areaXScale.domain([
                   d3.min(data.days, day => parseTime(day.date)),
@@ -230,65 +233,79 @@
                         .y0(areaYScale(0))
                         .y1(d => areaYScale(d.gross));
 
+        const flatArea = d3.area()
+                            .x((d, i) => d3.scaleLinear().domain([0, 6]).range([0, areaWidth])(i))
+                            .y0(areaYScale(0))
+                            .y1(d => areaYScale(0));
+
         let areaUpdate = areaChartGroup
                           .selectAll('.area')
                           .data(top5, d => d.total);
 
-        areaUpdate.exit().remove();
+        areaUpdate.exit()
+                    .transition(t)
+                    .attr('d', d => flatArea(d.values))
+                    .remove();
+
+        // areaUpdate.attr('d', d => flatArea(d.values)).transition().duration(500).delay(1000).attr('d', d => area(d.values));
 
         areaUpdate.enter()
                     .append('path')
                       .attr('class', 'area')
-                      .attr('d', d => area(d.values))
                       .attr('fill-opacity', 0.05)
                       .attr('fill', (d, i) => colorScheme[i])
                       .attr('stroke', (d, i) => colorScheme[i])
-                      .on('mouseover', function(d, i) {
-                        let title = d.title;
+                      .attr('d', d => flatArea(d.values))
+                      .transition(t)
+                      .delay(areaUpdate.exit().size() ? 500: 0)
+                      .attr('d', d => area(d.values))
 
-                        d3.select(this.parentNode)
-                          .selectAll('.area')
-                          .filter((d, i) => d.title !== title)
-                          .attr('fill-opacity', 0)
-                          .attr('stroke-opacity', 0.1);
+        areaUpdate.on('mouseover', function(d, i) {
+                    let title = d.title;
 
-                        d3.select(this.parentNode)
-                          .selectAll('.points')
-                          .filter((d, i) => d.title !== title)
-                          .selectAll('circle')
-                          .attr('fill-opacity', 0.1)
+                    d3.select(this.parentNode)
+                      .selectAll('.area')
+                      .filter((d, i) => d.title !== title)
+                      .attr('fill-opacity', 0)
+                      .attr('stroke-opacity', 0.1);
 
-                        d3.select(this)
-                          .transition(tIn)
-                          .attr('fill-opacity', 0.3);
+                    d3.select(this.parentNode)
+                      .selectAll('.points')
+                      .filter((d, i) => d.title !== title)
+                      .selectAll('circle')
+                      .attr('fill-opacity', 0.1)
 
-                        d3.select('#legend')
-                          .selectAll(`g:nth-child(${i+1})`)
-                          .transition(tIn)
-                          .attr('opacity', 1);
+                    d3.select(this)
+                      .transition(tIn)
+                      .attr('fill-opacity', 0.3);
 
-                      })
-                      .on('mouseout', function(d, i) {
-                        let title = d.title;
+                    d3.select('#legend')
+                      .selectAll(`g:nth-child(${i+1})`)
+                      .transition(tIn)
+                      .attr('opacity', 1);
 
-                        d3.select(this.parentNode)
-                          .selectAll('.area')
-                          .attr('fill-opacity', 0.05)
-                          .attr('stroke-opacity', 1);
+                  })
+                  .on('mouseout', function(d, i) {
+                    let title = d.title;
 
-                        d3.select(this.parentNode)
-                          .selectAll('circle')
-                          .attr('fill-opacity', 1)
+                    d3.select(this.parentNode)
+                      .selectAll('.area')
+                      .attr('fill-opacity', 0.05)
+                      .attr('stroke-opacity', 1);
 
-                        d3.select(this)
-                          .transition(tOut)
-                          .attr('fill-opacity', 0.05);
+                    d3.select(this.parentNode)
+                      .selectAll('circle')
+                      .attr('fill-opacity', 1)
 
-                        d3.select('#legend')
-                          .selectAll(`g:nth-child(${i+1})`)
-                          .transition(tOut)
-                          .attr('opacity', 0.5);
-                      });
+                    d3.select(this)
+                      .transition(tOut)
+                      .attr('fill-opacity', 0.05);
+
+                    d3.select('#legend')
+                      .selectAll(`g:nth-child(${i+1})`)
+                      .transition(tOut)
+                      .attr('opacity', 0.5);
+                  });
 
 
         /* ------------------------- scatterplot data ------------------------- */
@@ -311,6 +328,7 @@
                         .attr('r', 3)
                         .attr('cx', d => areaXScale(d.date))
                         .attr('cy', d => areaYScale(d.gross))
+                        .transition(t)
                         .attr('fill', function() {
                           let i = d3.select(this.parentNode).data()[0].rank - 1;
                           return colorScheme[i];
