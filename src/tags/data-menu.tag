@@ -53,6 +53,10 @@
   tag.dateRange = ''; //eventually will be selected by user
   tag.menuOptions = [];
 
+  function configureTransition(t, dur, del) {
+    return t.duration(dur).delay(del);
+  }
+
     tag.on('mount', function() {
 
       const svg = d3.select('.container')
@@ -61,7 +65,7 @@
       .attr('width', fullWidth)
       .call(responsivefy);
 
-      const t = d3.transition().duration(500);
+      const tDur = 400;
 
       /* -------------------- set up area chart groups and axes -------------------- */
 
@@ -200,7 +204,6 @@
                   gross: movie ? movie.daily_gross : 0
                 };
               }),
-              clearValues: data.days.map(day => ({ date: parseTime(day.date), gross: 0 }))
             }
           );
         }
@@ -243,7 +246,8 @@
                           .data(top5, d => d.total);
 
         areaUpdate.exit()
-                    .transition(t)
+                    .transition()
+                    .call(configureTransition, tDur, 0)
                     .attr('d', d => flatArea(d.values))
                     .remove();
 
@@ -256,79 +260,91 @@
                       .attr('fill', (d, i) => colorScheme[i])
                       .attr('stroke', (d, i) => colorScheme[i])
                       .attr('d', d => flatArea(d.values))
-                      .transition(t)
-                      .delay(areaUpdate.exit().size() ? 500: 0)
+                      .on('mouseover', handleAreaMouseover)
+                      .on('mouseout', handleAreaMouseout)
+                      .transition()
+                      .call(configureTransition, tDur, areaUpdate.exit().size() ? tDur: 0)
                       .attr('d', d => area(d.values))
 
-        areaUpdate.on('mouseover', function(d, i) {
-                    let title = d.title;
+        function handleAreaMouseover(d, i) {
+          let title = d.title;
 
-                    d3.select(this.parentNode)
-                      .selectAll('.area')
-                      .filter((d, i) => d.title !== title)
-                      .attr('fill-opacity', 0)
-                      .attr('stroke-opacity', 0.1);
+          d3.select(this.parentNode)
+            .selectAll('.area')
+            .filter((d, i) => d.title !== title)
+            .attr('fill-opacity', 0)
+            .attr('stroke-opacity', 0.1);
 
-                    d3.select(this.parentNode)
-                      .selectAll('.points')
-                      .filter((d, i) => d.title !== title)
-                      .selectAll('circle')
-                      .attr('fill-opacity', 0.1)
+          d3.select(this.parentNode)
+            .selectAll('.points')
+            .filter((d, i) => d.title !== title)
+            .selectAll('circle')
+            .attr('fill-opacity', 0.1)
 
-                    d3.select(this)
-                      .transition(tIn)
-                      .attr('fill-opacity', 0.3);
+          d3.select(this)
+            .transition(tIn)
+            .attr('fill-opacity', 0.3);
 
-                    d3.select('#legend')
-                      .selectAll(`g:nth-child(${i+1})`)
-                      .transition(tIn)
-                      .attr('opacity', 1);
+          d3.select('#legend')
+            .selectAll(`g:nth-child(${i+1})`)
+            .transition(tIn)
+            .attr('opacity', 1);
 
-                  })
-                  .on('mouseout', function(d, i) {
-                    let title = d.title;
+        }
 
-                    d3.select(this.parentNode)
-                      .selectAll('.area')
-                      .attr('fill-opacity', 0.05)
-                      .attr('stroke-opacity', 1);
+        function handleAreaMouseout(d, i) {
+          let title = d.title;
 
-                    d3.select(this.parentNode)
-                      .selectAll('circle')
-                      .attr('fill-opacity', 1)
+          d3.select(this.parentNode)
+            .selectAll('.area')
+            .attr('fill-opacity', 0.05)
+            .attr('stroke-opacity', 1);
 
-                    d3.select(this)
-                      .transition(tOut)
-                      .attr('fill-opacity', 0.05);
+          d3.select(this.parentNode)
+            .selectAll('circle')
+            .attr('fill-opacity', 1)
 
-                    d3.select('#legend')
-                      .selectAll(`g:nth-child(${i+1})`)
-                      .transition(tOut)
-                      .attr('opacity', 0.5);
-                  });
+          d3.select(this)
+            .transition(tOut)
+            .attr('fill-opacity', 0.05);
 
-
+          d3.select('#legend')
+            .selectAll(`g:nth-child(${i+1})`)
+            .transition(tOut)
+            .attr('opacity', 0.5);
+        }
         /* ------------------------- scatterplot data ------------------------- */
 
         let pointsGroupUpdate = areaChartGroup
                                   .selectAll('.points')
                                   .data(top5, d => d.total);
 
-        let pointsUpdate = pointsGroupUpdate.enter()
+        let pointsUpdate = pointsGroupUpdate
+                            .data(top5, d => d.total).enter()
                             .append('g')
                               .attr('class', 'points')
                               .selectAll('circle')
                               .data(d => d.values, d => d.gross);
 
-        pointsGroupUpdate.exit().remove();
-        pointsUpdate.exit().remove();
+        pointsGroupUpdate.exit()
+                          .each(function(p, j) {
+                            console.log('this', this)
+                            d3.select(this)
+                              .selectAll('circle')
+                              .transition()
+                              .call(configureTransition, tDur - 200, 200)
+                              .ease(d3.easeCubicIn)
+                              .attr('cy', areaHeight);
+                          })
+                          .transition()
+                          .call(configureTransition, 0, tDur)
+                          .remove();
 
         let point = pointsUpdate.enter()
                       .append('circle')
                         .attr('r', 3)
                         .attr('cx', d => areaXScale(d.date))
-                        .attr('cy', d => areaYScale(d.gross))
-                        .transition(t)
+                        .attr('cy', areaHeight)
                         .attr('fill', function() {
                           let i = d3.select(this.parentNode).data()[0].rank - 1;
                           return colorScheme[i];
@@ -338,85 +354,89 @@
                           return colorScheme[i];
                         })
                         .attr('stroke-width', 20)
-                        .attr('stroke-opacity', 0);
+                        .attr('stroke-opacity', 0)
+                        .on('mouseover', handlePointMouseover)
+                        .on('mouseout', handlePointMouseout)
 
-        point.on('mouseover', function(d, i) {
-                let title = d3.select(this.parentNode).data()[0].title;
+        point.transition()
+              .call(configureTransition, tDur, pointsGroupUpdate.exit().size() ? tDur : 0)
+              .attr('cy', d => areaYScale(d.gross));
 
-                let { date, gross } = d;
-                d3.select(this)
-                    .attr('fill-opacity', 0)
-                    .attr('stroke-opacity', 1)
-                    .attr('stroke-width', 20);
+        function handlePointMouseover(d, i) {
+          const title = d3.select(this.parentNode).data()[0].title;
+          const { date, gross } = d;
+          const xCoord = areaXScale(date);
+          const tooltip = pointsGroupUpdate
+                            .enter()
+                            .append('g')
+                            .attr('id', 'tooltip');
 
-                d3.selectAll('.area')
-                    .filter(d => d.title !== title)
-                    .attr('fill-opacity', 0)
-                    .attr('stroke-opacity', 0.1);
+          d3.select(this)
+              .attr('fill-opacity', 0)
+              .attr('stroke-opacity', 1)
+              .attr('stroke-width', 20);
 
-                d3.selectAll('.points')
-                  .filter(d => d.title !== title)
-                  .selectAll('circle')
-                  .attr('fill-opacity', 0.1)
+          d3.selectAll('.area')
+              .filter(d => d.title !== title)
+              .attr('fill-opacity', 0)
+              .attr('stroke-opacity', 0.1);
 
-                const tooltip = pointsUpdate
-                                  .enter()
-                                  .append('g')
-                                  .attr('id', 'tooltip');
-                let xCoord = areaXScale(date);
+          d3.selectAll('.points')
+            .filter(d => d.title !== title)
+            .selectAll('circle')
+            .attr('fill-opacity', 0.1)
 
-                tooltip.append('path')
-                        .attr('d', () => {
-                          if (xCoord > 600) {
-                            return `M${xCoord + Math.cos(135) * 10} ${areaYScale(gross) - Math.sin(45) * 10} l -40 -40 l -200 0`;
-                          }
-                          return `M${xCoord + Math.cos(45) * 11.5} ${areaYScale(gross) - Math.sin(45) * 11.5} l 40 -40 l 200 0`;
-                      })
-                        .style('fill', 'none')
-                        .style('stroke', '#000000')
-                        .style('stroke-width', 0.5);
+          tooltip.append('path')
+                  .attr('d', () => {
+                    if (xCoord > 600) {
+                      return `M${xCoord + Math.cos(135) * 10} ${areaYScale(gross) - Math.sin(45) * 10} l -40 -40 l -200 0`;
+                    }
+                    return `M${xCoord + Math.cos(45) * 11.5} ${areaYScale(gross) - Math.sin(45) * 11.5} l 40 -40 l 200 0`;
+                  })
+                  .style('fill', 'none')
+                  .style('stroke', '#000000')
+                  .style('stroke-width', 0.5);
 
-                tooltip.append('text')
-                        .attr('dx', () => {
-                          if (xCoord > 600) {
-                            return xCoord + Math.cos(135) * 10 -235;
-                          }
-                          return xCoord + Math.cos(45) * 11.5 + 45
-                        })
-                        .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 43)
-                        .attr('class', 'tooltip-data')
-                        .text(`${getDate(date)} -- $${gross.toLocaleString()}`);
+          tooltip.append('text')
+                  .attr('dx', () => {
+                    if (xCoord > 600) {
+                      return xCoord + Math.cos(135) * 10 -235;
+                    }
+                    return xCoord + Math.cos(45) * 11.5 + 45
+                  })
+                  .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 43)
+                  .attr('class', 'tooltip-data')
+                  .text(`${getDate(date)} -- $${gross.toLocaleString()}`);
 
-                tooltip.append('text')
-                            .attr('class', 'tooltip-title')
-                            .attr('dx', () => {
-                              if (xCoord > 600) {
-                                return xCoord + Math.cos(135) * 10 -235;
-                              }
-                              return xCoord + Math.cos(45) * 11.5 + 45
-                            })
-                            .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 62)
-                            .text(title);
-              });
+          tooltip.append('text')
+                    .attr('class', 'tooltip-title')
+                    .attr('dx', () => {
+                      if (xCoord > 600) {
+                        return xCoord + Math.cos(135) * 10 -235;
+                      }
+                      return xCoord + Math.cos(45) * 11.5 + 45
+                    })
+                    .attr('dy', areaYScale(gross) - Math.sin(45) * 11.5 - 62)
+                    .text(title);
+        }
 
-        point.on('mouseout', function(d, i) {
-                d3.select(this)
-                    .attr('fill-opacity', 1)
-                    .attr('stroke-opacity', 0)
-                    .attr('stroke-width', 20);
+        function handlePointMouseout(d, i) {
+          d3.select(this)
+              .attr('fill-opacity', 1)
+              .attr('stroke-opacity', 0)
+              .attr('stroke-width', 20);
 
-                d3.selectAll('circle')
-                  .attr('fill-opacity', 1);
+          d3.selectAll('circle')
+            .attr('fill-opacity', 1);
 
-                d3.selectAll('.area')
-                  .attr('fill-opacity', 0.05)
-                  .attr('stroke-opacity', 1)
-                // console.log('tooltip?', d3.select('#tooltip').nodes());
-                if (d3.select('#tooltip').nodes().length) {
-                  d3.selectAll('#tooltip').remove()
-                }
-              });
-
+          d3.selectAll('.area')
+            .attr('fill-opacity', 0.05)
+            .attr('stroke-opacity', 1)
+          // console.log('tooltip?', d3.select('#tooltip').nodes());
+          if (d3.select('#tooltip').nodes().length) {
+            d3.selectAll('#tooltip').remove()
+          }
+        }
 
         /* ---------------------------- legend data ---------------------------- */
 
