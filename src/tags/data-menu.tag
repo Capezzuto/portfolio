@@ -260,11 +260,13 @@
                       .attr('fill', (d, i) => colorScheme[i])
                       .attr('stroke', (d, i) => colorScheme[i])
                       .attr('d', d => flatArea(d.values))
-                      .on('mouseover', handleAreaMouseover)
-                      .on('mouseout', handleAreaMouseout)
                       .transition()
                       .call(configureTransition, tDur, areaUpdate.exit().size() ? tDur: 0)
                       .attr('d', d => area(d.values))
+                      .on('end', function(d,i) {
+                        d3.select(this).on('mouseover', handleAreaMouseover);
+                        d3.select(this).on('mouseout', handleAreaMouseout);
+                      })
 
         function handleAreaMouseover(d, i) {
           let title = d.title;
@@ -282,12 +284,10 @@
             .attr('fill-opacity', 0.1)
 
           d3.select(this)
-            .transition(tIn)
             .attr('fill-opacity', 0.3);
 
           d3.select('#legend')
             .selectAll(`g:nth-child(${i+1})`)
-            .transition(tIn)
             .attr('opacity', 1);
 
         }
@@ -305,12 +305,10 @@
             .attr('fill-opacity', 1)
 
           d3.select(this)
-            .transition(tOut)
             .attr('fill-opacity', 0.05);
 
           d3.select('#legend')
             .selectAll(`g:nth-child(${i+1})`)
-            .transition(tOut)
             .attr('opacity', 0.5);
         }
         /* ------------------------- scatterplot data ------------------------- */
@@ -328,7 +326,6 @@
 
         pointsGroupUpdate.exit()
                           .each(function(p, j) {
-                            console.log('this', this)
                             d3.select(this)
                               .selectAll('circle')
                               .transition()
@@ -466,11 +463,9 @@
                         .attr('fill-opacity', 0.3)
 
                       d3.select(this)
-                        .transition(tIn)
                         .attr('opacity', 1);
 
                       d3.selectAll(`.area:nth-child(${i+3})`)
-                        .transition(tIn)
                         .attr('fill-opacity', 0.3);
 
                     });
@@ -488,11 +483,9 @@
                           .attr('fill-opacity', 1)
 
                         d3.select(this)
-                          .transition(tOut)
                           .attr('opacity', 0.5);
 
                         d3.selectAll(`.area:nth-child(${i+3})`)
-                          .transition(tOut)
                           .attr('fill-opacity', 0.05);
                       });
 
@@ -553,69 +546,81 @@
                                     .attr('class', 'pie');
 
         pieEnter.append('path')
-                  .attr('d', arc)
-                  .style('fill', (d, i) => colorScheme[i])
+                  .on('mouseover', handlePieMouseover)
+                  .on('mouseout', handlePieMouseout)
+                  .attr('fill', (d, i) => colorScheme[i])
+                  .attr('fill-opacity', 0.5)
+                  .transition()
+                  .duration(tDur)
+                  .attrTween('d', tweenPie);
+
+
+        pieEnter.append('text')
                   .style('fill-opacity', 0.5)
-                  .on('mouseover', function(d, i) {
-                    const pietip = pieChartGroup
-                                      .append('g')
-                                      .attr('id', 'pietip');
-
-                    pietip.append('path')
-                            .attr('d', `M${labelArc.centroid(d)[0]} ${labelArc.centroid(d)[1] - 10} l 70 -40 l 200 0`)
-                            .style('fill', 'none')
-                            .style('stroke', '#000000')
-                            .style('stroke-opacity', '0.5');
-
-                    pietip.append('text')
-                            .attr('dx', labelArc.centroid(d)[0] + 75)
-                            .attr('dy', labelArc.centroid(d)[1] - 53)
-                            .attr('class', 'pietip-pct')
-                            .text(`%${d.data.pct} of total weekly box office`);
-
-                    pietip.append('text')
-                            .attr('class', 'pietip-gross')
-                            .attr('dx', labelArc.centroid(d)[0] + 75)
-                            .attr('dy', labelArc.centroid(d)[1] - 70)
-                            .text(`$${d.data.week_gross.toLocaleString()}`);
-
-                    pietip.append('text')
-                                .attr('class', 'pietip-title')
-                                .attr('dx', labelArc.centroid(d)[0] + 75)
-                                .attr('dy', labelArc.centroid(d)[1] - 90)
-                                .text(d.data.title);
-
-
-                    d3.select(this)
-                      .transition(tIn)
-                      .style('transform', 'scale(1.1)')
-                      .style('fill-opacity', 1);
-                  })
-                  .on('mouseout', function(d, i) {
-
-                    d3.select(this)
-                      .transition(tOut)
-                      .style('transform', 'scale(1)')
-                      .style('fill-opacity', 0.5)
-
-                    if (d3.select('#pietip').nodes().length) {
-                      pieChartGroup.select('#pietip').remove()
+                  .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+                  .attr('dx', -20)
+                  .attr('dy', '0.6em')
+                  .attr('pointer-events', 'none')
+                  .text(d => {
+                    if (d.data.title.length > 15) {
+                      return d.data.title.slice(0, 11) + '...'
                     }
-                  })
+                    return d.data.title
+                  });
 
+        function tweenPie(el) {
+          el.innerRadius = 0;
+          el.outerRadius = 0;
+          let interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, el);
+          return function(t) { return arc(interpolate(t)) };
+        }
 
-          pieEnter.append('text')
-                    .style('fill-opacity', 0.5)
-                    .attr('transform', d => `translate(${labelArc.centroid(d)})`)
-                    .attr('dx', -20)
-                    .attr('dy', '0.6em')
-                    .attr('pointer-events', 'none')
-                    .text(d => {
-                      if (d.data.title.length > 15) {
-                        return d.data.title.slice(0, 11) + '...'
-                      }
-                      return d.data.title
-                    });
+        function handlePieMouseover(d, i) {
+          const pietip = pieChartGroup
+                            .append('g')
+                            .attr('id', 'pietip');
+
+          pietip.append('path')
+                  .attr('d', `M${labelArc.centroid(d)[0]} ${labelArc.centroid(d)[1] - 10} l 70 -40 l 200 0`)
+                  .style('fill', 'none')
+                  .style('stroke', '#000000')
+                  .style('stroke-opacity', '0.5');
+
+          pietip.append('text')
+                  .attr('dx', labelArc.centroid(d)[0] + 75)
+                  .attr('dy', labelArc.centroid(d)[1] - 53)
+                  .attr('class', 'pietip-pct')
+                  .text(`%${d.data.pct} of total weekly box office`);
+
+          pietip.append('text')
+                  .attr('class', 'pietip-gross')
+                  .attr('dx', labelArc.centroid(d)[0] + 75)
+                  .attr('dy', labelArc.centroid(d)[1] - 70)
+                  .text(`$${d.data.week_gross.toLocaleString()}`);
+
+          pietip.append('text')
+                      .attr('class', 'pietip-title')
+                      .attr('dx', labelArc.centroid(d)[0] + 75)
+                      .attr('dy', labelArc.centroid(d)[1] - 90)
+                      .text(d.data.title);
+
+          d3.select(this)
+            .transition(tIn)
+            .style('transform', 'scale(1.1)')
+            .style('fill-opacity', 1);
+        }
+
+        function handlePieMouseout(d, i) {
+
+          d3.select(this)
+            .transition(tOut)
+            .style('transform', 'scale(1)')
+            .style('fill-opacity', 0.5)
+
+          if (d3.select('#pietip').nodes().length) {
+            pieChartGroup.select('#pietip').remove()
+          }
+        }
 
         /* ------------------------------ bar graph ------------------------------ */
 
