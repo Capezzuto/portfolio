@@ -208,7 +208,7 @@
           );
         }
 
-        console.log(top5);
+        // console.log(top5);
       /* ------------------------------ axis data ------------------------------ */
       areaXScale.domain([
                   d3.min(data.days, day => parseTime(day.date)),
@@ -325,7 +325,7 @@
                               .data(d => d.values, d => d.gross);
 
         pointsGroupUpdate.exit()
-                          .each(function(p, j) {
+                          .each(function() {
                             d3.select(this)
                               .selectAll('circle')
                               .transition()
@@ -554,7 +554,6 @@
                   .duration(tDur)
                   .attrTween('d', tweenPie);
 
-
         pieEnter.append('text')
                   .style('fill-opacity', 0.5)
                   .attr('transform', d => `translate(${labelArc.centroid(d)})`)
@@ -681,31 +680,49 @@
                           .selectAll('.bar')
                           .data(d => d.top5, d => d.title);
 
-        barGroupUpdate.exit().remove();
+        barGroupUpdate.exit()
+                      .each(function(d, i) {
+                        let timeMod = i * 50;
+                        d3.select(this)
+                          .selectAll('rect')
+                          .transition()
+                          .call(configureTransition, tDur, timeMod)
+                          .attr('y', barHeight)
+                          .attr('height', 0)
+                      })
+                      .transition()
+                      .call(configureTransition, 0, tDur + 250)
+                      .remove();
         barUpdate.exit().remove();
 
         let bar = barUpdate.enter()
                     .append('rect')
                       .attr('class', (d, i) => `bar bar-${i}`)
                       .attr('x', d => barX1Scale(d.title))
-                      .attr('y', d => barYScale(d.avg))
+                      .attr('y', barHeight)
                       .attr('width', barX1Scale.bandwidth())
-                      .attr('height', d => barHeight - barYScale(d.avg))
+                      .attr('height', 0)
                       .attr('fill', (d, i) => colorScheme[i])
-                      .attr('fill-opacity', 0.5);
+                      .attr('fill-opacity', 0.5)
+                      .on('mouseover', handleBarMouseover)
+                      .on('mouseout', handleBarMouseout);
 
-        bar.on('mouseover', function(d, i) {
+       bar.transition()
+          .call(configureTransition, tDur, barGroupUpdate.exit().size() ? tDur : 0)
+          .attr('y', d => barYScale(d.avg))
+          .attr('height', d => barHeight - barYScale(d.avg));
+
+        function handleBarMouseover(d, i) {
+          const groupXVal = parseInt(this.parentNode
+            .getAttribute('transform')
+            .split(',')[0]
+            .slice(10));
+          const bartip = barChartGroup.append('g')
+            .attr('id', 'bartip');
 
           d3.select(this)
             .transition(tIn)
             .attr('fill-opacity', 1);
-
-          const groupXVal = parseInt(this.parentNode
-                                      .getAttribute('transform')
-                                      .split(',')[0]
-                                      .slice(10));
-          const bartip = barChartGroup.append('g')
-                                        .attr('id', 'bartip');
 
           bartip.append('path')
                   .attr('d', () => {
@@ -736,14 +753,12 @@
                   })
                   .attr('dy', barYScale(d.avg) - 45)
                   .text(`Theaters: ${d.theaters}`)
+        }
 
-
-        });
-
-        bar.on('mouseout', function() {
+        function handleBarMouseout() {
           d3.select('#bartip').remove();
           d3.select(this).transition(tOut).attr('fill-opacity', 0.5);
-        })
+        }
 
         /* ---------------------------- bar chart legend ---------------------------- */
 
