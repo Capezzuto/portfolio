@@ -325,13 +325,10 @@
                               .data(d => d.values, d => d.gross);
 
         pointsGroupUpdate.exit()
-                          .each(function() {
+                          .each(function(d, i) {
                             d3.select(this)
                               .selectAll('circle')
-                              .transition()
-                              .call(configureTransition, tDur - 200, 200)
-                              .ease(d3.easeCubicIn)
-                              .attr('cy', areaHeight);
+                              .call(removePointsTransition, tDur - 200, 200);
                           })
                           .transition()
                           .call(configureTransition, 0, tDur)
@@ -355,9 +352,7 @@
                         .on('mouseover', handlePointMouseover)
                         .on('mouseout', handlePointMouseout)
 
-        point.transition()
-              .call(configureTransition, tDur, pointsGroupUpdate.exit().size() ? tDur : 0)
-              .attr('cy', d => areaYScale(d.gross));
+        point.call(addPointsTransition, tDur, pointsGroupUpdate.exit().size() ? tDur : 0)
 
         function handlePointMouseover(d, i) {
           const title = d3.select(this.parentNode).data()[0].title;
@@ -375,8 +370,9 @@
 
           d3.selectAll('.area')
               .filter(d => d.title !== title)
-              .attr('fill-opacity', 0)
-              .attr('stroke-opacity', 0.1);
+              .call(muteAreasPointTransition, 250)
+              // .attr('fill-opacity', 0)
+              // .attr('stroke-opacity', 0.1);
 
           d3.selectAll('.points')
             .filter(d => d.title !== title)
@@ -427,12 +423,40 @@
             .attr('fill-opacity', 1);
 
           d3.selectAll('.area')
-            .attr('fill-opacity', 0.05)
-            .attr('stroke-opacity', 1)
-          // console.log('tooltip?', d3.select('#tooltip').nodes());
+            .call(resetAreasPointTransition, 100);
+            
           if (d3.select('#tooltip').nodes().length) {
             d3.selectAll('#tooltip').remove()
           }
+        }
+
+        function addPointsTransition(point, duration, delay) {
+          point.transition('addPointsTransition')
+                .duration(duration)
+                .delay(delay)
+                .attr('cy', d => areaYScale(d.gross));
+        }
+
+        function removePointsTransition(point, duration, delay) {
+          point.transition('removePointsTransition')
+                .duration(duration)
+                .delay(delay)
+                .ease(d3.easeCubicIn)
+                .attr('cy', areaHeight);
+        }
+
+        function muteAreasPointTransition(area, duration) {
+          area.transition('muteAreasPointTransition')
+              .duration(duration)
+              .attr('fill-opacity', 0)
+              .attr('stroke-opacity', 0.1);
+        }
+
+        function resetAreasPointTransition(area, duration) {
+          area.transition('resetAreasPointTransition')
+              .duration(duration)
+              .attr('fill-opacity', 0.05)
+              .attr('stroke-opacity', 1);
         }
 
         /* ---------------------------- legend data ---------------------------- */
@@ -496,9 +520,6 @@
 
           d3.select(this)
             .call(resetEntry, 100);
-
-          // d3.selectAll(`.area:nth-child(${i+3})`)
-          //   .attr('fill-opacity', 0.05);
         }
 
         /*--------------- LegendEntry transition functions -----------------*/
@@ -659,7 +680,6 @@
                 .duration(duration)
                 .style('transform', 'scale(1.1)')
                 .style('fill-opacity', 1);
-
           }
         }
 
