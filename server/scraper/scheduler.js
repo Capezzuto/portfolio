@@ -1,5 +1,4 @@
 const rootPath = require('./path.json').path;
-console.log('path', rootPath);
 require('dotenv').config({ path: `/${rootPath}/capezzuto/portfolio/.env`});
 const config = require('../config/config.js');
 

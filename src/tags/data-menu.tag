@@ -604,20 +604,30 @@
                       .text(d.data.title);
 
           d3.select(this)
-            .transition(tIn)
-            .style('transform', 'scale(1.1)')
-            .style('fill-opacity', 1);
+            .call(transformSlice, 250);
+
+          function transformSlice(path, duration) {
+            path.transition('transformSlice')
+                .duration(duration)
+                .style('transform', 'scale(1.1)')
+                .style('fill-opacity', 1);
+
+          }
         }
 
         function handlePieMouseout(d, i) {
-
           d3.select(this)
-            .transition(tOut)
-            .style('transform', 'scale(1)')
-            .style('fill-opacity', 0.5)
+            .call(transformSlice, 100);
 
           if (d3.select('#pietip').nodes().length) {
             pieChartGroup.select('#pietip').remove()
+          }
+
+          function transformSlice(path, duration) {
+            path.transition('transformSlice')
+                .duration(duration)
+                .style('transform', 'scale(1)')
+                .style('fill-opacity', 0.5);
           }
         }
 
