@@ -443,51 +443,11 @@
         legendUpdate.exit().remove();
 
         let legendEntry = legendUpdate.enter()
-                                            .append('g')
-                                              .attr('class', 'legend-entry')
-                                              .attr('opacity', 0.5);
-
-        legendEntry.on('mouseover', function(d, i) {
-                      let title = d.title;
-
-                      d3.select(this.parentNode.previousSibling)
-                        .selectAll('.area')
-                        .filter(d => d.title !== title)
-                        .attr('fill-opacity', 0)
-                        .attr('stroke-opacity', 0.1);
-
-                      d3.select(this.parentNode.previousSibling)
-                        .selectAll('.points')
-                        .filter(d => d.title !== title)
-                        .selectAll('circle')
-                        .attr('fill-opacity', 0.3)
-
-                      d3.select(this)
-                        .attr('opacity', 1);
-
-                      d3.selectAll(`.area:nth-child(${i+3})`)
-                        .attr('fill-opacity', 0.3);
-
-                    });
-
-          legendEntry.on('mouseout', function(d, i) {
-                        let title = d.title;
-
-                        d3.select(this.parentNode.previousSibling)
-                          .selectAll('.area')
-                          .attr('fill-opacity', 0.05)
-                          .attr('stroke-opacity', 1);
-
-                        d3.select(this.parentNode.previousSibling)
-                          .selectAll('circle')
-                          .attr('fill-opacity', 1)
-
-                        d3.select(this)
-                          .attr('opacity', 0.5);
-
-                        d3.selectAll(`.area:nth-child(${i+3})`)
-                          .attr('fill-opacity', 0.05);
-                      });
+                            .append('g')
+                              .attr('class', 'legend-entry')
+                              .attr('opacity', 0.5)
+                              .on('mouseover', handleLegendMouseover)
+                              .on('mouseout', handleLegendMouseout);
 
         legendEntry.append('rect')
                     .attr('fill', (d, i) => colorScheme[i])
@@ -502,6 +462,94 @@
                     .attr('fill', (d, i) => colorScheme[i])
                     .attr('text-anchor', 'end')
                     .text(d => d.title);
+
+        function handleLegendMouseover(d, i) {
+          let title = d.title;
+
+          d3.select(this.parentNode.previousSibling)
+            .selectAll('.area')
+            .filter(d => d.title !== title)
+            .call(muteOtherAreas, 250);
+
+          d3.select(this.parentNode.previousSibling)
+            .selectAll('.points')
+            .filter(d => d.title !== title)
+            .call(muteOtherPoints, 250)
+
+          d3.select(this)
+            .call(highlightEntry, 250);
+
+          d3.selectAll(`.area:nth-child(${i+3})`)
+            .call(highlightArea, 250);
+        }
+
+        function handleLegendMouseout(d, i) {
+          let title = d.title;
+
+          d3.select(this.parentNode.previousSibling)
+            .selectAll('.area')
+            .call(resetAllAreas, 100);
+
+          d3.select(this.parentNode.previousSibling)
+            .selectAll('circle')
+            .call(resetAllPoints, 100);
+
+          d3.select(this)
+            .call(resetEntry, 100);
+
+          // d3.selectAll(`.area:nth-child(${i+3})`)
+          //   .attr('fill-opacity', 0.05);
+        }
+
+        /*--------------- LegendEntry transition functions -----------------*/
+        function muteOtherAreas(area, duration) {
+          area.transition('muteOtherAreas')
+              .duration(duration)
+              .attr('fill-opacity', 0)
+              .attr('stroke-opacity', 0.1);
+        }
+
+        function resetAllAreas(area, duration) {
+          area.transition('resetAllAreas')
+              .duration(duration)
+              .attr('fill-opacity', 0.05)
+              .attr('stroke-opacity', 1);
+        }
+
+        function muteOtherPoints(pointGroup, duration) {
+          pointGroup.each(function() {
+            d3.select(this)
+              .selectAll('circle')
+              .transition('muteOtherPoints')
+              .duration(duration)
+              .attr('fill-opacity', 0.3);
+          })
+        }
+
+        function resetAllPoints(point, duration) {
+          point.transition('resetAllPoints')
+                .duration(duration)
+                .attr('fill-opacity', 1);
+        }
+
+        function highlightEntry(entry, duration) {
+          entry.transition('highlightEntry')
+                .duration(duration)
+                .attr('opacity', 1);
+        }
+
+        function resetEntry(entry, duration) {
+          entry.transition('resetEntry')
+                .duration(duration)
+                .attr('opacity', 0.5);
+        }
+
+        function highlightArea(area, duration) {
+          area.transition('highlightArea')
+              .duration(duration)
+              .attr('fill-opacity', 0.3);
+        }
+
 
         /* ---------------------------- circle data ---------------------------- */
         const radius = pieWidth / 2;
