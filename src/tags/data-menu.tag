@@ -425,7 +425,6 @@
           d3.select(this)
               .attr('fill-opacity', 0)
               .attr('stroke-opacity', 1)
-              // .attr('stroke-width', 20);
 
           d3.selectAll('.area')
               .filter(d => d.title !== title)
@@ -783,14 +782,12 @@
                         let timeMod = i * 50;
                         d3.select(this)
                           .selectAll('rect')
-                          .transition()
-                          .call(configureTransition, tDur, timeMod)
-                          .attr('y', barHeight)
-                          .attr('height', 0)
+                          .call(removeBarGroupTransition, tDur, timeMod);
                       })
                       .transition()
                       .call(configureTransition, 0, tDur + 250)
                       .remove();
+
         barUpdate.exit().remove();
 
         let bar = barUpdate.enter()
@@ -805,10 +802,7 @@
                       .on('mouseover', handleBarMouseover)
                       .on('mouseout', handleBarMouseout);
 
-       bar.transition()
-          .call(configureTransition, tDur, barGroupUpdate.exit().size() ? tDur : 0)
-          .attr('y', d => barYScale(d.avg))
-          .attr('height', d => barHeight - barYScale(d.avg));
+        bar.call(addBarGroupTransition, tDur, barGroupUpdate.exit().size() ? tDur : 0)
 
         function handleBarMouseover(d, i) {
           const groupXVal = parseInt(this.parentNode
@@ -819,8 +813,7 @@
             .attr('id', 'bartip');
 
           d3.select(this)
-            .transition(tIn)
-            .attr('fill-opacity', 1);
+            .call(highlightBarMouseover, 250);
 
           bartip.append('path')
                   .attr('d', () => {
@@ -855,7 +848,38 @@
 
         function handleBarMouseout() {
           d3.select('#bartip').remove();
-          d3.select(this).transition(tOut).attr('fill-opacity', 0.5);
+          d3.select(this)
+            .call(resetBarMouseout, 100);
+        }
+
+        /* ---------------------- Bar Chart Transition Functions ---------------------- */
+
+        function addBarGroupTransition(barGroup, duration, delay) {
+          barGroup.transition('addBarGroupTransition')
+                  .duration(duration)
+                  .delay(delay)
+                  .attr('y', d => barYScale(d.avg))
+                  .attr('height', d => barHeight - barYScale(d.avg));
+        }
+
+        function removeBarGroupTransition(barGroup, duration, delay) {
+          barGroup.transition('removeBarGroupTransition')
+                  .duration(duration)
+                  .delay(delay)
+                  .attr('y', barHeight)
+                  .attr('height', 0);
+        }
+
+        function highlightBarMouseover(bar, duration) {
+          bar.transition('highlightBarMouseover')
+              .duration(duration)
+              .attr('fill-opacity', 1);
+        }
+
+        function resetBarMouseout(bar, duration) {
+          bar.transition('resetBarMouseout')
+              .duration(duration)
+              .attr('fill-opacity', 0.5);
         }
 
         /* ---------------------------- bar chart legend ---------------------------- */
@@ -885,30 +909,50 @@
                               .attr('y', (d, i) => i * 30 + 15)
                               .text(d => d);
 
-        barLegendEntry.on('mouseover', function(d, i) {
-          d3.select(this.parentNode.previousSibling)
-             .selectAll(`.bar-${i}`)
-             .transition(tIn)
-             .attr('fill-opacity', 1);
+        barLegendEntry.on('mouseover', handleBarLegendMouseover);
 
-          let selectionn = d3.select(this.parentNode.previousSibling)
+        barLegendEntry.on('mouseout', handleBarLegendMouseout);
+
+        function handleBarLegendMouseover(d, i) {
+          d3.select(this.parentNode.previousSibling)
+              .selectAll(`.bar-${i}`)
+              .call(highlightBarsTransition, 250);
+
+          d3.select(this.parentNode.previousSibling)
               .selectAll('.bar')
               .filter(function() {
                 return this.classList[1] !== `bar-${i}`;
               })
-              .transition(tIn)
-              .attr('fill-opacity', 0);
+              .call(muteOtherBarsTransition, 250);
+        }
 
-        });
-
-        barLegendEntry.on('mouseout', function(d, i) {
+        function handleBarLegendMouseout(d, i) {
           d3.select(this.parentNode.previousSibling)
             .selectAll(`.bar`)
-            .transition()
-            .attr('fill-opacity', 0.5);
-        });
+            .call(resetAllBarsTransition, 100);
+        }
+
+        /* --------------- Bar Legend Transition Functions --------------- */
+        function highlightBarsTransition(bar, duration) {
+          bar.transition('highlightBarsTransition')
+              .duration(duration)
+              .attr('fill-opacity', 1);
+        }
+
+        function muteOtherBarsTransition(bar, duration) {
+          bar.transition('muteOtherBarsTransition')
+              .duration(duration)
+              .attr('fill-opacity', 0);
+        }
+
+        function resetAllBarsTransition(bar, duration) {
+          bar.transition('resetAllBarsTransition')
+              .duration(duration)
+              .attr('fill-opacity', 0.5);
+        }
 
       }
+
 
       tag.selectAndUpdateGraph = function(e) {
         axios.get(`/data/boxoffice/weekly/${e.target.value}`)
@@ -919,6 +963,7 @@
             console.log('error in update..', err);
           })
       }
+
     });
     /* ---------- responsivefy originally written by Brendan Sudol ---------- */
     /* ---------  http://www.brendansudol.com/writing/responsive-d3 ---------  */
