@@ -246,12 +246,10 @@
                           .data(top5, d => d.total);
 
         areaUpdate.exit()
+                    .call(removeAreaTransition, tDur)
                     .transition()
-                    .call(configureTransition, tDur, 0)
-                    .attr('d', d => flatArea(d.values))
+                    .delay(tDur)
                     .remove();
-
-        // areaUpdate.attr('d', d => flatArea(d.values)).transition().duration(500).delay(1000).attr('d', d => area(d.values));
 
         areaUpdate.enter()
                     .append('path')
@@ -260,13 +258,9 @@
                       .attr('fill', (d, i) => colorScheme[i])
                       .attr('stroke', (d, i) => colorScheme[i])
                       .attr('d', d => flatArea(d.values))
-                      .transition()
-                      .call(configureTransition, tDur, areaUpdate.exit().size() ? tDur: 0)
-                      .attr('d', d => area(d.values))
-                      .on('end', function(d,i) {
-                        d3.select(this).on('mouseover', handleAreaMouseover);
-                        d3.select(this).on('mouseout', handleAreaMouseout);
-                      })
+                      .on('mouseover', handleAreaMouseover)
+                      .on('mouseout', handleAreaMouseout)
+                      .call(addAreaTransition, tDur, areaUpdate.exit().size() ? tDur: 0);
 
         function handleAreaMouseover(d, i) {
           let title = d.title;
@@ -274,22 +268,19 @@
           d3.select(this.parentNode)
             .selectAll('.area')
             .filter((d, i) => d.title !== title)
-            .attr('fill-opacity', 0)
-            .attr('stroke-opacity', 0.1);
+            .call(muteOtherAreas, 250);
 
           d3.select(this.parentNode)
             .selectAll('.points')
             .filter((d, i) => d.title !== title)
-            .selectAll('circle')
-            .attr('fill-opacity', 0.1)
+            .call(muteOtherPoints, 250);
 
           d3.select(this)
-            .attr('fill-opacity', 0.3);
+            .call(highlightArea, 250);
 
           d3.select('#legend')
             .selectAll(`g:nth-child(${i+1})`)
-            .attr('opacity', 1);
-
+            .call(highlightEntry, 250);
         }
 
         function handleAreaMouseout(d, i) {
@@ -297,20 +288,88 @@
 
           d3.select(this.parentNode)
             .selectAll('.area')
-            .attr('fill-opacity', 0.05)
-            .attr('stroke-opacity', 1);
+            .call(resetAllAreas, 100);
 
           d3.select(this.parentNode)
             .selectAll('circle')
-            .attr('fill-opacity', 1)
-
-          d3.select(this)
-            .attr('fill-opacity', 0.05);
+            .call(resetAllPoints, 100);
 
           d3.select('#legend')
             .selectAll(`g:nth-child(${i+1})`)
-            .attr('opacity', 0.5);
+            .call(resetEntry, 100);
         }
+
+        /* -------------------- Area Transition Functions -------------------- */
+
+        function addAreaTransition(areaBlock, duration, delay) {
+          areaBlock.transition('addAreaTransition')
+              .duration(duration)
+              .delay(delay)
+              .attr('d', d => area(d.values))
+        }
+
+        function removeAreaTransition(area, duration) {
+          area.transition('removeAreaTransition')
+              .duration(duration)
+              .attr('d', d => flatArea(d.values))
+        }
+
+        function muteOtherAreas(area, duration) {
+          area.transition('muteOtherAreas')
+              .duration(duration)
+              .attr('fill-opacity', 0)
+              .attr('stroke-opacity', 0.1);
+        }
+
+        // Is this function more performant than muteOtherPoints?
+        // To run this function, you would have to .selectAll('circle') after the .filter but before the .call
+        // function muteOtherCircles(circle, duration) {
+        //   circle.transition('muteOtherCircles')
+        //         .duration(duration)
+        //         .attr('fill-opacity', 0.1)
+        // }
+
+        function muteOtherPoints(pointGroup, duration) {
+          pointGroup.each(function() {
+            d3.select(this)
+              .selectAll('circle')
+              .transition('muteOtherPoints')
+              .duration(duration)
+              .attr('fill-opacity', 0.3);
+          })
+        }
+
+        function highlightArea(area, duration) {
+          area.transition('highlightArea')
+              .duration(duration)
+              .attr('fill-opacity', 0.3);
+        }
+
+        function highlightEntry(entry, duration) {
+          entry.transition('highlightEntry')
+                .duration(duration)
+                .attr('opacity', 1);
+        }
+
+        function resetAllAreas(area, duration) {
+          area.transition('resetAllAreas')
+              .duration(duration)
+              .attr('fill-opacity', 0.05)
+              .attr('stroke-opacity', 1);
+        }
+
+        function resetAllPoints(point, duration) {
+          point.transition('resetAllPoints')
+                .duration(duration)
+                .attr('fill-opacity', 1);
+        }
+
+        function resetEntry(entry, duration) {
+          entry.transition('resetEntry')
+                .duration(duration)
+                .attr('opacity', 0.5);
+        }
+
         /* ------------------------- scatterplot data ------------------------- */
 
         let pointsGroupUpdate = areaChartGroup
@@ -366,13 +425,11 @@
           d3.select(this)
               .attr('fill-opacity', 0)
               .attr('stroke-opacity', 1)
-              .attr('stroke-width', 20);
+              // .attr('stroke-width', 20);
 
           d3.selectAll('.area')
               .filter(d => d.title !== title)
               .call(muteAreasPointTransition, 250)
-              // .attr('fill-opacity', 0)
-              // .attr('stroke-opacity', 0.1);
 
           d3.selectAll('.points')
             .filter(d => d.title !== title)
@@ -424,40 +481,42 @@
 
           d3.selectAll('.area')
             .call(resetAreasPointTransition, 100);
-            
+
           if (d3.select('#tooltip').nodes().length) {
             d3.selectAll('#tooltip').remove()
           }
         }
 
-        function addPointsTransition(point, duration, delay) {
-          point.transition('addPointsTransition')
-                .duration(duration)
-                .delay(delay)
-                .attr('cy', d => areaYScale(d.gross));
-        }
+      /* ------------------- Points transition functions ------------------- */
 
-        function removePointsTransition(point, duration, delay) {
-          point.transition('removePointsTransition')
-                .duration(duration)
-                .delay(delay)
-                .ease(d3.easeCubicIn)
-                .attr('cy', areaHeight);
-        }
-
-        function muteAreasPointTransition(area, duration) {
-          area.transition('muteAreasPointTransition')
+      function addPointsTransition(point, duration, delay) {
+        point.transition('addPointsTransition')
               .duration(duration)
-              .attr('fill-opacity', 0)
-              .attr('stroke-opacity', 0.1);
-        }
+              .delay(delay)
+              .attr('cy', d => areaYScale(d.gross));
+      }
 
-        function resetAreasPointTransition(area, duration) {
-          area.transition('resetAreasPointTransition')
+      function removePointsTransition(point, duration, delay) {
+        point.transition('removePointsTransition')
               .duration(duration)
-              .attr('fill-opacity', 0.05)
-              .attr('stroke-opacity', 1);
-        }
+              .delay(delay)
+              .ease(d3.easeCubicIn)
+              .attr('cy', areaHeight);
+      }
+
+      function muteAreasPointTransition(area, duration) {
+        area.transition('muteAreasPointTransition')
+            .duration(duration)
+            .attr('fill-opacity', 0)
+            .attr('stroke-opacity', 0.1);
+      }
+
+      function resetAreasPointTransition(area, duration) {
+        area.transition('resetAreasPointTransition')
+            .duration(duration)
+            .attr('fill-opacity', 0.05)
+            .attr('stroke-opacity', 1);
+      }
 
         /* ---------------------------- legend data ---------------------------- */
 
@@ -523,54 +582,15 @@
         }
 
         /*--------------- LegendEntry transition functions -----------------*/
-        function muteOtherAreas(area, duration) {
-          area.transition('muteOtherAreas')
-              .duration(duration)
-              .attr('fill-opacity', 0)
-              .attr('stroke-opacity', 0.1);
-        }
 
-        function resetAllAreas(area, duration) {
-          area.transition('resetAllAreas')
-              .duration(duration)
-              .attr('fill-opacity', 0.05)
-              .attr('stroke-opacity', 1);
-        }
-
-        function muteOtherPoints(pointGroup, duration) {
-          pointGroup.each(function() {
-            d3.select(this)
-              .selectAll('circle')
-              .transition('muteOtherPoints')
-              .duration(duration)
-              .attr('fill-opacity', 0.3);
-          })
-        }
-
-        function resetAllPoints(point, duration) {
-          point.transition('resetAllPoints')
-                .duration(duration)
-                .attr('fill-opacity', 1);
-        }
-
-        function highlightEntry(entry, duration) {
-          entry.transition('highlightEntry')
-                .duration(duration)
-                .attr('opacity', 1);
-        }
-
-        function resetEntry(entry, duration) {
-          entry.transition('resetEntry')
-                .duration(duration)
-                .attr('opacity', 0.5);
-        }
-
-        function highlightArea(area, duration) {
-          area.transition('highlightArea')
-              .duration(duration)
-              .attr('fill-opacity', 0.3);
-        }
-
+        // The following functions are found in the area transition functions:
+        // function muteOtherAreas(area, duration)
+        // function resetAllAreas(area, duration)
+        // function muteOtherPoints(pointGroup, duration)
+        // function resetAllPoints(point, duration)
+        // function highlightEntry(entry, duration)
+        // function resetEntry(entry, duration) {
+        // function highlightArea(area, duration)
 
         /* ---------------------------- circle data ---------------------------- */
         const radius = pieWidth / 2;
