@@ -788,7 +788,7 @@
                       .call(configureTransition, 0, tDur + 250)
                       .remove();
 
-        barUpdate.exit().remove();
+        // barUpdate.exit().remove();
 
         let bar = barUpdate.enter()
                     .append('rect')
@@ -892,7 +892,9 @@
 
         let barLegendEntry = barLegendUpdate.enter()
                                       .append('g')
-                                        .attr('class', 'legend-entry');
+                                        .attr('class', 'legend-entry')
+                                        .on('mouseover', handleBarLegendMouseover)
+                                        .on('mouseout', handleBarLegendMouseout);
 
         barLegendEntry.append('rect')
                               .attr('fill', (d,i) => colorScheme[i])
@@ -909,11 +911,9 @@
                               .attr('y', (d, i) => i * 30 + 15)
                               .text(d => d);
 
-        barLegendEntry.on('mouseover', handleBarLegendMouseover);
-
-        barLegendEntry.on('mouseout', handleBarLegendMouseout);
 
         function handleBarLegendMouseover(d, i) {
+          console.log('over');
           d3.select(this.parentNode.previousSibling)
               .selectAll(`.bar-${i}`)
               .call(highlightBarsTransition, 250);
@@ -927,9 +927,10 @@
         }
 
         function handleBarLegendMouseout(d, i) {
+          console.log('out');
           d3.select(this.parentNode.previousSibling)
-            .selectAll(`.bar`)
-            .call(resetAllBarsTransition, 100);
+            .selectAll('.bar')
+            .call(resetAllBarsTransition, 200);
         }
 
         /* --------------- Bar Legend Transition Functions --------------- */
@@ -946,6 +947,7 @@
         }
 
         function resetAllBarsTransition(bar, duration) {
+          console.log('reset');
           bar.transition('resetAllBarsTransition')
               .duration(duration)
               .attr('fill-opacity', 0.5);
