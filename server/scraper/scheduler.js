@@ -23,7 +23,8 @@ mongoose.connect(config.db)
     weekAndYear = latestWeek;
     let { week, year } = weekAndYear;
     if (week != null) {
-      week = ++week < 10 ? '0' + week : String(week);
+      week = yesterday.isoWeekday() === 4 ? +week : +week + 1;
+      week = week < 10 ? '0' + week : String(week);
       if (parseInt(week) > 52) {
         week = '01';
         year = String(year++);
