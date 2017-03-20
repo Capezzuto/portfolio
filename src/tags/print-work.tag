@@ -1,9 +1,11 @@
 <print-work>
+  </style>
+
   <div class="background background-magenta"></div>
   <div class="overlay"></div>
   <div class="page-header"><h2>Product Design and Advertising</h2></div>
   <div class="container">
-    <div each={item, i in thumbs.products} class="print-entry">
+    <div each={item, i in thumbs.products} class="print-entry loading">
       <img
         data-cat="products"
         data-link="{item.link}"
@@ -15,7 +17,7 @@
         index="{i}">
     </div>
     <div><h2>Illustration</h2></div>
-    <div each={item, i in thumbs.illustrations} class="print-entry">
+    <div each={item, i in thumbs.illustrations} class="print-entry loading">
       <img
         data-cat="illustrations"
         data-link="{item.link}"
@@ -102,6 +104,24 @@
 
     $('body').on('click', '.overlay', function(){
       $('.overlay').html('').hide();
+    })
+
+    this.on('mount', () => {
+
+      
+      let entries = document.querySelectorAll('.loading');
+      let entriesArray = Array.prototype.slice.call(entries, 0);
+      console.log('entries', entries);
+      console.log('array', entriesArray);
+      entriesArray
+      .forEach(function(entry) {
+        console.log('for each...')
+        entry.addEventListener('animationend', function() {
+          console.log('animation ending...')
+          this.classList.remove('loading');
+        })
+      })
+
     })
 
   </script>

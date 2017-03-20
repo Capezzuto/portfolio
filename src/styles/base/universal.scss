@@ -226,6 +226,21 @@ body {
 
 }
 
+.loading {
+  animation-name: loadIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-in;
+}
+
+@keyframes loadIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .footnotes {
   padding: 5px 20px;
 }

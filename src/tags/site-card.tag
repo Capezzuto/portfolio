@@ -1,6 +1,6 @@
 <site-card>
 
-  <div class="site-container" style="background-image: url('{opts.image}')">
+  <div class="site-container loading" style="background-image: url('{opts.image}')">
     <a href="{opts.url}" target="_blank">
       <div class="site-entry">
         <h1>{opts.title}</h1>
@@ -11,7 +11,13 @@
   </div>
 
   <script>
-
+    this.on('mount', () => {
+      const site = document.querySelector('.loading');
+      site.addEventListener('animationend', function() {
+        console.log('this', this);
+        site.classList.remove('loading');
+      })
+    })
   </script>
 
 </site-card>
