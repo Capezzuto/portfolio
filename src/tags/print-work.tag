@@ -108,20 +108,10 @@
 
     this.on('mount', () => {
 
-      
-      let entries = document.querySelectorAll('.loading');
-      let entriesArray = Array.prototype.slice.call(entries, 0);
-      console.log('entries', entries);
-      console.log('array', entriesArray);
-      entriesArray
-      .forEach(function(entry) {
-        console.log('for each...')
-        entry.addEventListener('animationend', function() {
-          console.log('animation ending...')
-          this.classList.remove('loading');
-        })
+      $('.loading').one('animationend', function() {
+        $(this).removeClass('loading');
       })
-
+      
     })
 
   </script>

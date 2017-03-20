@@ -12,10 +12,8 @@
 
   <script>
     this.on('mount', () => {
-      const site = document.querySelector('.loading');
-      site.addEventListener('animationend', function() {
-        console.log('this', this);
-        site.classList.remove('loading');
+      $('.loading').one('animationend', function(e) {
+        $(this).removeClass('loading');
       })
     })
   </script>
